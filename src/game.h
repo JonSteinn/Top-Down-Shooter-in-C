@@ -6,13 +6,14 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <SDL2/SDL.h>
+#include "gclock.h"
 
 typedef struct {
     SDL_Window*     window;
     SDL_Renderer*   renderer;
 
     bool            is_running;
-    
+    GameClock*      gclock;
 } Game;
 
 Game* init_game(int32_t argc, char** args);

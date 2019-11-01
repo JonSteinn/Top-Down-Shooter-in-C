@@ -2,7 +2,6 @@
 
 #define UNUSED(x) (void)x // TODO: remove
 
-static void __process_time(Game* game);
 static void __process_events(Game* game);
 static void __update(Game* game);
 static void __render(Game* game);
@@ -40,15 +39,18 @@ Game* init_game(int32_t argc, char** args) {
         return NULL;
     }
 
+    game->gclock = init_game_clock();
+
     return game;
 }
 
 void start_game(Game* game) {
     if (game == NULL) return;
 
+    while (game->is_running) {       
+        update_game_clock(game->gclock);
+        printf("%.6f --- %.6f\n", game->gclock->dt, game->gclock->fps);
 
-    while (game->is_running) {
-        __process_time(game);
         __process_events(game);
         __update(game);
         __render(game);
@@ -59,14 +61,11 @@ void destroy_game(Game* game) {
     if (game != NULL) {
         SDL_DestroyWindow(game->window);
         SDL_DestroyRenderer(game->renderer);
+
+        destroy_game_clock(game->gclock);
     }
     
     SDL_Quit();
-}
-
-
-void __process_time(Game* game) {
-
 }
 
 void __process_events(Game* game) {
@@ -78,4 +77,5 @@ void __update(Game* game) {
 }
 
 void __render(Game* game) {
+
 }

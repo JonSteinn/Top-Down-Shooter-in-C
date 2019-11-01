@@ -4,10 +4,13 @@ OBJFLAGS = -c
 LDLIBS = $(shell pkg-config --libs sdl2)
 TARGET = main
 
+# Modules
 GAME = game
+CLOCK = gclock
 
 DEPENDENCIES = \
-	$(GAME).o
+	$(GAME).o \
+	$(CLOCK).o
 
 define COMPILE
 $(1).o: $(1).c
@@ -23,6 +26,7 @@ $(TARGET): $(TARGET).o $(DEPENDENCIES)
 
 $(call COMPILE,TARGET)
 $(call COMPILE,GAME)
+$(call COMPILE,CLOCKs)
 
 clean:
 	rm -f *.o
