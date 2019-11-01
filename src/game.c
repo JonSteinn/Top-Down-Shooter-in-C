@@ -2,6 +2,11 @@
 
 #define UNUSED(x) (void)x // TODO: remove
 
+static void __process_time(Game* game);
+static void __process_events(Game* game);
+static void __update(Game* game);
+static void __render(Game* game);
+
 Game* init_game(int32_t argc, char** args) {
     UNUSED(argc);UNUSED(args); // TODO: remove
 
@@ -11,6 +16,7 @@ Game* init_game(int32_t argc, char** args) {
     }
 
     Game* game = (Game*)malloc(sizeof(Game));
+    game->is_running = true;
     
     game->window = SDL_CreateWindow(
         "MyWindow",                 // window title
@@ -41,14 +47,12 @@ void start_game(Game* game) {
     if (game == NULL) return;
 
 
-    SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 255);
-    SDL_RenderClear(game->renderer);
-    SDL_SetRenderDrawColor(game->renderer, 255, 0, 0, 255);
-    SDL_Rect rect = { 50, 50, 200, 200 };
-    SDL_RenderFillRect(game->renderer, &rect);
-    SDL_RenderPresent(game->renderer);
-
-    SDL_Delay(1000);
+    while (game->is_running) {
+        __process_time(game);
+        __process_events(game);
+        __update(game);
+        __render(game);
+    }
 }
 
 void destroy_game(Game* game) {
@@ -58,4 +62,20 @@ void destroy_game(Game* game) {
     }
     
     SDL_Quit();
+}
+
+
+void __process_time(Game* game) {
+
+}
+
+void __process_events(Game* game) {
+
+}
+
+void __update(Game* game) {
+
+}
+
+void __render(Game* game) {
 }
