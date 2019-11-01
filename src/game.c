@@ -7,9 +7,9 @@ Game* init_game(int32_t argc, char** args) {
 }
 
 void start_game(Game* game) {
-
+    if (game == NULL) return;
 }
 
 void destroy_game(Game* game) {
-    
+    if (game == NULL) return;
 }
