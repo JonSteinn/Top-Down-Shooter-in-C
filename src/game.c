@@ -15,7 +15,7 @@ Game* init_game(int32_t argc, char** args) {
     }
 
     Game* game = (Game*)malloc(sizeof(Game));
-    game->is_running = true;
+    game->running = true;
     
     game->window = SDL_CreateWindow(
         "MyWindow",                 // window title
@@ -89,7 +89,7 @@ void __process_events(Game* game) {
 
 
     const Uint8 *state = SDL_GetKeyboardState(NULL);
-    float dist =  50 * game->gclock->dt;
+    float dist = 0.15f * game->gclock->dt;
     if (state[SDL_SCANCODE_LEFT]) x -= dist;
     if (state[SDL_SCANCODE_RIGHT]) x += dist;
     if (state[SDL_SCANCODE_UP]) y -= dist;
@@ -97,14 +97,14 @@ void __process_events(Game* game) {
 }
 
 void __update(Game* game) {
-    
+    UNUSED(game);
 }
 
 void __render(Game* game) {
     SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 255);
     SDL_RenderClear(game->renderer);
     SDL_SetRenderDrawColor(game->renderer, 0, 255, 255, 255);
-    SDL_Rect rect = { (int)x, (int)x, 200, 200 };
+    SDL_Rect rect = { (int)x, (int)y, 200, 200 };
     SDL_RenderFillRect(game->renderer, &rect);
     SDL_RenderPresent(game->renderer);
 }
