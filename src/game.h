@@ -2,10 +2,13 @@
 #define dR4wsjUCND_GAME_H
 
 #include <stdint.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include <SDL2/SDL.h>
 
 typedef struct {
-    SDL_Window* window;
+    SDL_Window*     window;
+    SDL_Renderer*   renderer;
 } Game;
 
 Game* init_game(int32_t argc, char** args);

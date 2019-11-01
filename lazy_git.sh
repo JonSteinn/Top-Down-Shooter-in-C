@@ -9,5 +9,5 @@ make -C ./src distclean
 make -C ./src clean
 
 git add .
-git commit -m "$1"
-git push "https://jonsteinn:$2@github.com/jonsteinn/c-game.git"
+git commit -m "$2"
+git push "https://jonsteinn:$1@github.com/jonsteinn/c-game.git"
