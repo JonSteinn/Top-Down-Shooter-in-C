@@ -1,5 +1,11 @@
 {
     "files.associations": {
-        "game.h": "c"
+        "game.h": "c",
+        "stdint.h": "c"
+    },
+    "C_Cpp.default.intelliSenseMode": "gcc-x64",
+    "files.exclude": {
+        "**/*.exe": true,
+        "**/*.o": true
     }
 }
