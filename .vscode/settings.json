@@ -1,7 +1,10 @@
 {
     "files.associations": {
         "game.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "gevent.h": "c",
+        "stdbool.h": "c",
+        "stdlib.h": "c"
     },
     "C_Cpp.default.intelliSenseMode": "gcc-x64",
     "files.exclude": {

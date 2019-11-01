@@ -40,6 +40,7 @@ Game* init_game(int32_t argc, char** args) {
     }
 
     game->gclock = init_game_clock();
+    game->gevt = init_game_events();
 
     return game;
 }
@@ -49,7 +50,6 @@ void start_game(Game* game) {
 
     while (game->running) {       
         update_game_clock(game->gclock);
-
         __process_events(game);
         __update(game);
         __render(game);
@@ -67,37 +67,18 @@ void destroy_game(Game* game) {
     SDL_Quit();
 }
 
-float x = 50, y = 50; // TODO: Remove
 
 void __process_events(Game* game) {
-
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        switch (event.type) {
-            case SDL_KEYDOWN:
-                switch (event.key.keysym.sym) {
-                    case SDLK_ESCAPE:
-                        game->running = false;
-                        break;
-                }
-                break;
-            case SDL_QUIT:
-                game->running = false;
-                break;
-        }
-    }
-
-
-    const Uint8 *state = SDL_GetKeyboardState(NULL);
-    float dist = 0.15f * game->gclock->dt;
-    if (state[SDL_SCANCODE_LEFT]) x -= dist;
-    if (state[SDL_SCANCODE_RIGHT]) x += dist;
-    if (state[SDL_SCANCODE_UP]) y -= dist;
-    if (state[SDL_SCANCODE_DOWN]) y += dist;
+    process_events(game->gevt);
+    if (game->gevt->quit) game->running = false;
 }
 
+float x = 50, y = 50; // TODO: Remove
 void __update(Game* game) {
-    UNUSED(game);
+    if (game->gevt->move_left) x -= 0.15 * game->gclock->dt;
+    if (game->gevt->move_right) x += 0.15 * game->gclock->dt;
+    if (game->gevt->move_up) y -= 0.15 * game->gclock->dt;
+    if (game->gevt->move_down) y += 0.15 * game->gclock->dt;
 }
 
 void __render(Game* game) {
