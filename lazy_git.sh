@@ -10,5 +10,4 @@ make -C ./src clean
 
 git add .
 git commit -m "$1"
-echo "jonsteinn
-$2" | git push origin master
+git push origin master <<< $'jonsteinn\n$2'
