@@ -12,7 +12,7 @@ typedef struct {
     SDL_Window*     window;
     SDL_Renderer*   renderer;
 
-    bool            is_running;
+    bool            running;
     GameClock*      gclock;
 } Game;
 

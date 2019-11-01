@@ -5,10 +5,10 @@
 #include <SDL2/SDL.h>
 
 typedef struct {
-    Uint64 now;
-    Uint64 last;
-    float dt;
-    float fps;
+    Uint64  now;
+    Uint64  last;
+    float   dt;
+    float   fps;
 } GameClock;
 
 GameClock* init_game_clock();

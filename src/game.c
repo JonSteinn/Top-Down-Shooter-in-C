@@ -47,9 +47,8 @@ Game* init_game(int32_t argc, char** args) {
 void start_game(Game* game) {
     if (game == NULL) return;
 
-    while (game->is_running) {       
+    while (game->running) {       
         update_game_clock(game->gclock);
-        printf("%.6f --- %.6f\n", game->gclock->dt, game->gclock->fps);
 
         __process_events(game);
         __update(game);
@@ -68,14 +67,44 @@ void destroy_game(Game* game) {
     SDL_Quit();
 }
 
+float x = 50, y = 50; // TODO: Remove
+
 void __process_events(Game* game) {
 
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym) {
+                    case SDLK_ESCAPE:
+                        game->running = false;
+                        break;
+                }
+                break;
+            case SDL_QUIT:
+                game->running = false;
+                break;
+        }
+    }
+
+
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
+    float dist =  50 * game->gclock->dt;
+    if (state[SDL_SCANCODE_LEFT]) x -= dist;
+    if (state[SDL_SCANCODE_RIGHT]) x += dist;
+    if (state[SDL_SCANCODE_UP]) y -= dist;
+    if (state[SDL_SCANCODE_DOWN]) y += dist;
 }
 
 void __update(Game* game) {
-
+    
 }
 
 void __render(Game* game) {
-
+    SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 255);
+    SDL_RenderClear(game->renderer);
+    SDL_SetRenderDrawColor(game->renderer, 0, 255, 255, 255);
+    SDL_Rect rect = { (int)x, (int)x, 200, 200 };
+    SDL_RenderFillRect(game->renderer, &rect);
+    SDL_RenderPresent(game->renderer);
 }
