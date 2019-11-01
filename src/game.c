@@ -1,5 +1,15 @@
 #include "game.h"
 
-void test() {
-    printf("test");
+
+
+Game* init_game(int32_t argc, char** args) {
+    return NULL;
+}
+
+void start_game(Game* game) {
+
+}
+
+void destroy_game(Game* game) {
+    
 }
