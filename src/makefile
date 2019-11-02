@@ -8,11 +8,13 @@ TARGET = main
 GAME = game
 CLOCK = gclock
 EVENT = gevent
+MATH = gmath
 
 DEPENDENCIES = \
 	$(GAME).o \
 	$(CLOCK).o \
-	$(EVENT).o
+	$(EVENT).o \
+	$(MATH).o
 
 define COMPILE
 $(1).o: $(1).c
@@ -30,6 +32,7 @@ $(call COMPILE,TARGET)
 $(call COMPILE,GAME)
 $(call COMPILE,CLOCK)
 $(call COMPILE,EVENT)
+$(call COMPILE,MATH)
 
 clean:
 	rm -f *.o
