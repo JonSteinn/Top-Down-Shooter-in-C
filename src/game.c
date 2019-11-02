@@ -73,19 +73,16 @@ void __process_events(Game* game) {
     if (game->gevt->quit) game->running = false;
 }
 
-float x = 50, y = 50; // TODO: Remove
 void __update(Game* game) {
-    if (game->gevt->move_left) x -= 0.15 * game->gclock->dt;
-    if (game->gevt->move_right) x += 0.15 * game->gclock->dt;
-    if (game->gevt->move_up) y -= 0.15 * game->gclock->dt;
-    if (game->gevt->move_down) y += 0.15 * game->gclock->dt;
+    UNUSED(game);
 }
 
 void __render(Game* game) {
     SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 255);
     SDL_RenderClear(game->renderer);
-    SDL_SetRenderDrawColor(game->renderer, 0, 255, 255, 255);
-    SDL_Rect rect = { (int)x, (int)y, 200, 200 };
-    SDL_RenderFillRect(game->renderer, &rect);
+    
+    
+    
+    
     SDL_RenderPresent(game->renderer);
 }
