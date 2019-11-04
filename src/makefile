@@ -1,7 +1,17 @@
 CC = gcc
-CFLAGS = -std=c11 -D_XOPEN_SOURCE=700 -O2 -Wall -Wextra -Wformat=2 $(shell pkg-config --cflags sdl2)
+CFLAGS = \
+	-std=c11 \
+	-D_XOPEN_SOURCE=700 \
+	-O2 \
+	-Wall \
+	-Wextra \
+	-Wformat=2 \
+	$(shell pkg-config --cflags sdl2) \
+	$(shell pkg-config --cflags SDL2_image)
 OBJFLAGS = -c
-LDLIBS = $(shell pkg-config --libs sdl2)
+LDLIBS = \
+	$(shell pkg-config --libs sdl2) \
+	$(shell pkg-config --libs SDL2_image)
 TARGET = main
 
 # Modules
