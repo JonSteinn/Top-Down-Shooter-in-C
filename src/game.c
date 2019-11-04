@@ -34,8 +34,8 @@ void start_game(Game* game) {
 }
 
 void destroy_game(Game* game) {
-    SDL_DestroyWindow(game->window);
     SDL_DestroyRenderer(game->renderer);
+    SDL_DestroyWindow(game->window);
 
     destroy_game_clock(game->gclock);
     destroy_game_events(game->gevt);
