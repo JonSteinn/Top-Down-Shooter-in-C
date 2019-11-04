@@ -17,13 +17,13 @@ Game* init_game(int32_t argc, char** args) {
     game->running = true;
     __init_window(game);
     __init_renderer(game);
-    game->gclock = init_game_clock();
     game->gevt = init_game_events();
+    game->player = init_player(50.0f, 50.0f);
+    game->gclock = init_game_clock();
     return game;
 }
 
 void start_game(Game* game) {
-    if (game == NULL) return;
 
     while (game->running) {       
         update_game_clock(game->gclock);
@@ -34,12 +34,14 @@ void start_game(Game* game) {
 }
 
 void destroy_game(Game* game) {
-    if (game != NULL) {
-        SDL_DestroyWindow(game->window);
-        SDL_DestroyRenderer(game->renderer);
+    SDL_DestroyWindow(game->window);
+    SDL_DestroyRenderer(game->renderer);
 
-        destroy_game_clock(game->gclock);
-    }
+    destroy_game_clock(game->gclock);
+    destroy_game_events(game->gevt);
+    destroy_player(game->player);
+
+    free(game);
     
     SDL_Quit();
 }

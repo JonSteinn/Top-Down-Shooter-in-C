@@ -8,7 +8,7 @@
 #include <SDL2/SDL.h>
 #include "gclock.h"
 #include "gevent.h"
-
+#include "player.h"
 
 typedef struct {
     SDL_Window*     window;
@@ -17,6 +17,8 @@ typedef struct {
     bool            running;
     GameClock*      gclock;
     GameEvents*     gevt;
+
+    Player*         player;
 } Game;
 
 Game* init_game(int32_t argc, char** args);
