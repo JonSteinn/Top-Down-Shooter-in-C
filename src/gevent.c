@@ -1,19 +1,35 @@
 #include "gevent.h"
 
+static void __set_to_default(GameEvents* gevts);
+static void __poll_events(GameEvents* gevts);
+static void __keyboard_state(GameEvents* gevts);
 
 GameEvents* init_game_events() {
-    GameEvents* ge = (GameEvents*)malloc(sizeof(GameEvents));
-    return ge;
+    GameEvents* gevts = (GameEvents*)malloc(sizeof(GameEvents));
+    __set_to_default(gevts);
+    return gevts;
+}
+void process_events(GameEvents* gevts) {
+    __set_to_default(gevts);
+    __poll_events(gevts);
+    __keyboard_state(gevts);
 }
 
-void process_events(GameEvents* gevts) {
-    gevts->quit = false;
-    gevts->move_up = false;
-    gevts->move_down = false;
-    gevts->move_left = false;
-    gevts->move_right = false;
+void destroy_game_events(GameEvents* gevts) {
+    free(gevts);
+}
 
 
+void __set_to_default(GameEvents* gevts) {
+    gevts->quit         = false;
+    gevts->move_up      = false;
+    gevts->move_down    = false;
+    gevts->move_left    = false;
+    gevts->move_right   = false;
+    gevts->shoot        = false;
+}
+
+void __poll_events(GameEvents* gevts) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
@@ -29,24 +45,20 @@ void process_events(GameEvents* gevts) {
                 break;
         }
     }
-
-    const Uint8 *state = SDL_GetKeyboardState(NULL);
-    if (state[SDL_SCANCODE_LEFT]) gevts->move_left = true;
-    if (state[SDL_SCANCODE_RIGHT]) gevts->move_right = true;
-    if (state[SDL_SCANCODE_UP]) gevts->move_up = true;
-    if (state[SDL_SCANCODE_DOWN]) gevts->move_down = true;
-
-    if (state[SDL_SCANCODE_LEFT] && state[SDL_SCANCODE_RIGHT]) {
-        gevts->move_left = false;
-        gevts->move_right = false;
-    }
-
-    if (state[SDL_SCANCODE_UP] && state[SDL_SCANCODE_DOWN]) {
-        gevts->move_up = false;
-        gevts->move_down = false;
-    }
 }
 
-void destroy_game_events(GameEvents* gevts) {
-    free(gevts);
+void __keyboard_state(GameEvents* gevts) {
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+    if (state[SDL_SCANCODE_LEFT] && !state[SDL_SCANCODE_RIGHT]) {
+        gevts->move_left = true;
+    } else if (!state[SDL_SCANCODE_LEFT] && state[SDL_SCANCODE_RIGHT]) {
+        gevts->move_right = true;
+    }
+
+    if (state[SDL_SCANCODE_UP] && !state[SDL_SCANCODE_DOWN]) {
+        gevts->move_up = true;
+    } else if (!state[SDL_SCANCODE_UP] && state[SDL_SCANCODE_DOWN]) {
+        gevts->move_down = true;
+    }
 }

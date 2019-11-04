@@ -11,6 +11,7 @@ typedef struct {
     bool move_right;
     bool move_up;
     bool move_down;
+    bool shoot;
 } GameEvents;
 
 GameEvents* init_game_events();
