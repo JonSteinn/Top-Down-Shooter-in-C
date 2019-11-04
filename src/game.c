@@ -70,7 +70,7 @@ void __update(Game* game) {
 
     float dx = game->gevt->mouseX - game->player->position->x;
     float dy = game->gevt->mouseY - game->player->position->y;
-    game->player->rotation = (dy < 0 ? -1 : 1) * 180.0f * SDL_acos(dx * carmack_inverse_sqrt(dx * dx + dy * dy)) / 3.14159f;
+    game->player->rotation = (dy < 0 ? -1 : 1) * 180.0f * fast_acos(dx * carmack_inverse_sqrt(dx * dx + dy * dy)) / 3.14159265358979f;
 }
 
 void __render(Game* game) {
