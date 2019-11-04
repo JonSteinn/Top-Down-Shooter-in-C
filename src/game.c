@@ -2,46 +2,23 @@
 
 #define UNUSED(x) (void)x // TODO: remove
 
+static void __init_SDL();
+static void __init_window(Game* game);
+static void __init_renderer(Game* game);
+
 static void __process_events(Game* game);
 static void __update(Game* game);
 static void __render(Game* game);
 
 Game* init_game(int32_t argc, char** args) {
     UNUSED(argc);UNUSED(args); // TODO: remove
-
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
-        exit(EXIT_FAILURE);
-    }
-
+    __init_SDL();
     Game* game = (Game*)malloc(sizeof(Game));
     game->running = true;
-    
-    game->window = SDL_CreateWindow(
-        "MyWindow",                 // window title
-        SDL_WINDOWPOS_UNDEFINED,    // initial x position
-        SDL_WINDOWPOS_UNDEFINED,    // initial y position
-        800,                        // width, in pixels
-        600,                        // height, in pixels
-        SDL_WINDOW_OPENGL           // flags
-    );
-    if (game->window == NULL) {
-        printf("Could not create window: %s\n", SDL_GetError());
-        free(game);
-        return NULL;
-    }
-
-    game->renderer = SDL_CreateRenderer(game->window, -1, SDL_RENDERER_ACCELERATED);
-    if (game->renderer == NULL) {
-        printf("Could not create renderer: %s\n", SDL_GetError());
-        SDL_DestroyWindow(game->window);      
-        free(game);
-        return NULL;
-    }
-
+    __init_window(game);
+    __init_renderer(game);
     game->gclock = init_game_clock();
     game->gevt = init_game_events();
-
     return game;
 }
 
@@ -70,7 +47,7 @@ void destroy_game(Game* game) {
 
 void __process_events(Game* game) {
     process_events(game->gevt);
-    if (game->gevt->quit) game->running = false;
+    game->running = !game->gevt->quit;
 }
 
 void __update(Game* game) {
@@ -85,4 +62,39 @@ void __render(Game* game) {
     
     
     SDL_RenderPresent(game->renderer);
+}
+
+void __init_SDL() {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+        exit(EXIT_FAILURE);
+    }
+}
+
+void __init_window(Game* game) {
+    game->window = SDL_CreateWindow(
+        "MyWindow",                 // window title
+        SDL_WINDOWPOS_UNDEFINED,    // initial x position
+        SDL_WINDOWPOS_UNDEFINED,    // initial y position
+        800,                        // width, in pixels
+        600,                        // height, in pixels
+        SDL_WINDOW_OPENGL           // flags
+    );
+    if (game->window == NULL) {
+        printf("Could not create window: %s\n", SDL_GetError());
+        free(game);
+        SDL_Quit();
+        exit(EXIT_FAILURE);
+    }
+}
+
+void __init_renderer(Game* game) {
+    game->renderer = SDL_CreateRenderer(game->window, -1, SDL_RENDERER_ACCELERATED);
+    if (game->renderer == NULL) {
+        printf("Could not create renderer: %s\n", SDL_GetError());
+        SDL_DestroyWindow(game->window);
+        SDL_Quit();
+        free(game);
+        exit(EXIT_FAILURE);
+    }
 }

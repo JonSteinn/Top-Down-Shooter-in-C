@@ -9,6 +9,7 @@
 #include "gclock.h"
 #include "gevent.h"
 
+
 typedef struct {
     SDL_Window*     window;
     SDL_Renderer*   renderer;
