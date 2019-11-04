@@ -13,6 +13,8 @@ void process_events(GameEvents* gevts) {
     __set_to_default(gevts);
     __poll_events(gevts);
     __keyboard_state(gevts);
+
+    gevts->shoot = SDL_GetMouseState(&gevts->mouseX, &gevts->mouseY) & SDL_BUTTON(1);
 }
 
 void destroy_game_events(GameEvents* gevts) {

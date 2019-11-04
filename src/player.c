@@ -9,10 +9,10 @@ Player* init_player(SDL_Renderer* renderer, float x, float y) {
     }
     
     Player* p = (Player*)malloc(sizeof(Player));
-    p->position = (Vector2d*)malloc(sizeof(Vector2d));
-    p->velocity = (Vector2d*)malloc(sizeof(Vector2d));
+    p->position = (Point2d*)malloc(sizeof(Point2d));
     p->position->x = x;
     p->position->y = y;
+    p->rotation = -90;
 
 
     p->texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -28,10 +28,14 @@ Player* init_player(SDL_Renderer* renderer, float x, float y) {
     return p;
 }
 
+void draw_player(SDL_Renderer* renderer,Player* player) {
+    SDL_Rect rect = { (int)player->position->x, (int)player->position->y, 25, 25 } ;
+    SDL_RenderCopyEx(renderer, player->texture, NULL, &rect, player->rotation, NULL, SDL_FLIP_NONE);
+}
+
 void destroy_player(Player* player) {
     SDL_DestroyTexture(player->texture);
 
     free(player->position);
-    free(player->velocity);
     free(player);
 }

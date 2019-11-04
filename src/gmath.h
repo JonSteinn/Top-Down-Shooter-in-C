@@ -8,4 +8,5 @@ typedef struct {
 
 typedef Vector2d Point2d;
 
+float carmack_inverse_sqrt(float number);
 #endif

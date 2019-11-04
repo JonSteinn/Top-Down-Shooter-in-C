@@ -8,12 +8,13 @@
 
 typedef struct {
     Point2d*        position;
-    Vector2d*       velocity;
+    float           rotation;
 
     SDL_Texture*    texture;
 } Player;
 
 Player* init_player(SDL_Renderer* renderer, float x, float y);
+void draw_player(SDL_Renderer* renderer, Player* player);
 void destroy_player(Player* player);
 
 #endif

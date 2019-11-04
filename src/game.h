@@ -9,6 +9,7 @@
 #include "gclock.h"
 #include "gevent.h"
 #include "player.h"
+#include "gmath.h"
 
 typedef struct {
     SDL_Window*     window;

@@ -22,7 +22,7 @@ Game* init_game(int32_t argc, char** args) {
 
     __init_window(game);
     __init_renderer(game);
-    __init_player(game, 50.0f, 50.0f);
+    __init_player(game, 400.0f, 300.0f);
 
     game->gevt = init_game_events();
     game->gclock = init_game_clock();
@@ -61,21 +61,23 @@ void __process_events(Game* game) {
     game->running = !game->gevt->quit;
 }
 
+
 void __update(Game* game) {    
     if (game->gevt->move_left) game->player->position->x -= 0.1f * game->gclock->dt;
     if (game->gevt->move_right) game->player->position->x += 0.1f * game->gclock->dt;
     if (game->gevt->move_up) game->player->position->y -= 0.1f * game->gclock->dt;
     if (game->gevt->move_down) game->player->position->y += 0.1f * game->gclock->dt;
+
+    float dx = game->gevt->mouseX - game->player->position->x;
+    float dy = game->gevt->mouseY - game->player->position->y;
+    game->player->rotation = (dy < 0 ? -1 : 1) * 180.0f * SDL_acos(dx * carmack_inverse_sqrt(dx * dx + dy * dy)) / 3.14159f;
 }
 
 void __render(Game* game) {
     SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 255);
     SDL_RenderClear(game->renderer);
     
-    
-    SDL_SetRenderDrawColor(game->renderer, 0, 255, 255, 255);
-    SDL_Rect rect = { (int)game->player->position->x, (int)game->player->position->y, 25, 25 } ;
-    SDL_RenderCopy(game->renderer, game->player->texture, NULL, &rect);
+    draw_player(game->renderer, game->player);
     
     SDL_RenderPresent(game->renderer);
 }
