@@ -75,7 +75,7 @@ void __render(Game* game) {
     
     SDL_SetRenderDrawColor(game->renderer, 0, 255, 255, 255);
     SDL_Rect rect = { (int)game->player->position->x, (int)game->player->position->y, 25, 25 } ;
-    SDL_RenderFillRect(game->renderer, &rect);
+    SDL_RenderCopy(game->renderer, game->player->texture, NULL, &rect);
     
     SDL_RenderPresent(game->renderer);
 }

@@ -30,7 +30,7 @@ Player* init_player(SDL_Renderer* renderer, float x, float y) {
 
 void destroy_player(Player* player) {
     SDL_DestroyTexture(player->texture);
-    
+
     free(player->position);
     free(player->velocity);
     free(player);
