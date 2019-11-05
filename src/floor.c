@@ -26,7 +26,7 @@ Floor* init_floor(SDL_Renderer* renderer) {
         free(floor);
         return NULL;   
     }
-    
+
     SDL_FreeSurface(surface);
 
     return floor;

@@ -1,6 +1,7 @@
 #ifndef jPERNJXbbF_PLAYER_H
 #define jPERNJXbbF_PLAYER_H
 
+#include <stdint.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdlib.h>
@@ -16,11 +17,17 @@
  *      The angle from 'east' to the direction of the player
  *  texture
  *      The player sprite
+ *  texture_width
+ *  texture_height
+ *  collision_circumference
  */
 typedef struct {
     Point2d*        position;
     float           rotation;
     SDL_Texture*    texture;
+    int32_t         texture_width;
+    int32_t         texture_height;
+    int32_t         collision_circumference;
 } Player;
 
 /**

@@ -23,6 +23,15 @@ Player* init_player(SDL_Renderer* renderer, float x, float y) {
         return NULL;   
     }
 
+    if (SDL_QueryTexture(p->texture, NULL, NULL, &p->texture_width, &p->texture_height) < 0) {
+        SDL_Log("Could not query texture: %s\n", SDL_GetError());
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(p->texture);
+        free(p);
+        return NULL;   
+    }
+
+    p->collision_circumference = p->texture_width < p->texture_height ? p->texture_width : p->texture_height;
 
     SDL_FreeSurface(surface);
     
@@ -36,11 +45,11 @@ void update_player(Player* player, GameEvents* gevts, float dt, int32_t w, int32
         player->position->x -= 0.15f * dt;
         if (player->position->x < 0) player->position->x = 0.0f;
     }
-
+    
     if (gevts->move_right) {
         player->position->x += 0.15f * dt;
-        if (player->position->x + 54 > w) {
-            player->position->x = w - 54;
+        if (player->position->x + player->collision_circumference > w) {
+            player->position->x = w - player->collision_circumference;
         }
     }
     
@@ -51,8 +60,8 @@ void update_player(Player* player, GameEvents* gevts, float dt, int32_t w, int32
     
     if (gevts->move_down) {
         player->position->y += 0.15f * dt;
-        if (player->position->y + 32 > h) {
-            player->position->y = h - 32;
+        if (player->position->y + player->collision_circumference > h) {
+            player->position->y = h - player->collision_circumference;
         } 
     }
 
