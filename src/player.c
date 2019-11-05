@@ -29,19 +29,38 @@ Player* init_player(SDL_Renderer* renderer, float x, float y) {
 }
 
 
-void update_player(Player* player, GameEvents* gevts, float dt) {
+void update_player(Player* player, GameEvents* gevts, float dt, int32_t w, int32_t h) {
 
-    if (gevts->move_left) player->position->x -= 0.15f * dt;
-    if (gevts->move_right) player->position->x += 0.15f * dt;
-    if (gevts->move_up) player->position->y -= 0.15f * dt;
-    if (gevts->move_down) player->position->y += 0.15f * dt;
+    if (gevts->move_left) {
+        player->position->x -= 0.15f * dt;
+        if (player->position->x < 0) player->position->x = 0.0f;
+    }
+
+    if (gevts->move_right) {
+        player->position->x += 0.15f * dt;
+        if (player->position->x + 54 > w) {
+            player->position->x = w - 54;
+        }
+    }
+    
+    if (gevts->move_up) {
+        player->position->y -= 0.15f * dt;
+        if (player->position->y < 0) player->position->y = 0.0f;
+    }
+    
+    if (gevts->move_down) {
+        player->position->y += 0.15f * dt;
+        if (player->position->y + 32 > h) {
+            player->position->y = h - 32;
+        } 
+    }
 
     Vector2d d = {gevts->mouseX - player->position->x, gevts->mouseY - player->position->y};
     player->rotation = sign(d.y) * rad_to_deg(fast_acos(d.x * carmack_inverse_sqrt(length_squared(&d))));
 }
 
 void draw_player(SDL_Renderer* renderer,Player* player) {
-    SDL_Rect rect = { (int)player->position->x, (int)player->position->y, 25, 25 } ;
+    SDL_Rect rect = { (int)player->position->x, (int)player->position->y, 54, 32 } ;
     SDL_RenderCopyEx(renderer, player->texture, NULL, &rect, player->rotation, NULL, SDL_FLIP_NONE);
 }
 

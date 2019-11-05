@@ -31,7 +31,7 @@ Player* init_player(SDL_Renderer* renderer, float x, float y);
 /**
  * Update the player based on events.
  */
-void update_player(Player* player, GameEvents* gevts, float dt);
+void update_player(Player* player, GameEvents* gevts, float dt, int32_t w, int32_t h);
 
 /**
  * Draw the player.

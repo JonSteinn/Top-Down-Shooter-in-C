@@ -79,7 +79,7 @@ void __process_events(Game* game) {
 
 
 void __update(Game* game) {
-    update_player(game->player, game->gevts, game->gclock->dt);
+    update_player(game->player, game->gevts, game->gclock->dt, game->width, game->height);
 }
 
 void __render(Game* game) {
