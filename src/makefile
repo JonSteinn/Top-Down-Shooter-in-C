@@ -7,11 +7,13 @@ CFLAGS = \
 	-Wextra \
 	-Wformat=2 \
 	$(shell pkg-config --cflags sdl2) \
-	$(shell pkg-config --cflags SDL2_image)
+	$(shell pkg-config --cflags SDL2_image) \
+	$(shell pkg-config --cflags SDL2_mixer)
 OBJFLAGS = -c
 LDLIBS = \
 	$(shell pkg-config --libs sdl2) \
-	$(shell pkg-config --libs SDL2_image)
+	$(shell pkg-config --libs SDL2_image) \
+	$(shell pkg-config --libs SDL2_mixer)
 TARGET = main
 
 # Modules
@@ -22,6 +24,7 @@ MATH = gmath
 PLAYER = player
 UTILS = utils
 FLOOR = floor
+SOUND = sound
 
 DEPENDENCIES = \
 	$(GAME).o \
@@ -30,7 +33,8 @@ DEPENDENCIES = \
 	$(MATH).o \
 	$(PLAYER).o \
 	$(UTILS).o \
-	$(FLOOR).o
+	$(FLOOR).o \
+	$(SOUND).o
 
 define COMPILE
 $(1).o: $(1).c
@@ -52,6 +56,7 @@ $(call COMPILE,MATH)
 $(call COMPILE,PLAYER)
 $(call COMPILE,UTILS)
 $(call COMPILE,FLOOR)
+$(call COMPILE,SOUND)
 
 clean:
 	rm -f *.o

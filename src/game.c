@@ -109,7 +109,7 @@ void __parse_arguments(Game* game, int32_t argc, char** args, int32_t w, int32_t
 }
 
 void __init_SDL() {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
         exit(EXIT_FAILURE);
     }

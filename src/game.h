@@ -12,6 +12,7 @@
 #include "gmath.h"
 #include "utils.h"
 #include "floor.h"
+#include "sound.h"
 
 /**
  * The main game object that keeps hold of all resources.
