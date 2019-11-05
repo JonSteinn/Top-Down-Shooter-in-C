@@ -98,10 +98,14 @@ void __parse_arguments(Game* game, int32_t argc, char** args, int32_t w, int32_t
             && (args[i][0] == 'w' || args[i][0] == 'h') && args[i][1] == '=') {
 
                 int32_t v = string_to_int(args[i]+2);
-                if (args[i][0] == 'w') game->width = v < 400 ? 400 : (v > 0.9f * w ? w : v);
-                if (args[i][0] == 'h') game->height = v < 400 ? 400 : (v > 0.9f * h ? h : v);
-
+                if (args[i][0] == 'w') game->width = v < 400 ? 400 : v;
+                if (args[i][0] == 'h') game->height = v < 400 ? 400 : v;
         }
+    }
+
+    if (game->width > 0.9 * w || game->height > 0.9 * h) {
+        game->width = w;
+        game->height = h;
     }
 }
 
