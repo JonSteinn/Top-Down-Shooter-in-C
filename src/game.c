@@ -2,23 +2,27 @@
 
 #define UNUSED(x) (void)x // TODO: remove
 
+static void __parse_arguments(Game* game, int32_t argc, char** args);
+
 static void __init_SDL();
 static void __init_window(Game* game);
 static void __init_renderer(Game* game);
 static void __init_player(Game* game, float x, float y);
-
 
 static void __process_events(Game* game);
 static void __update(Game* game);
 static void __render(Game* game);
 
 Game* init_game(int32_t argc, char** args) {
-    UNUSED(argc);UNUSED(args); // TODO: remove
 
     __init_SDL();
 
     Game* game = (Game*)malloc(sizeof(Game));
     game->running = true;
+    game->width = 800;
+    game->height = 600;
+
+    __parse_arguments(game, argc, args);
 
     __init_window(game);
     __init_renderer(game);
@@ -75,6 +79,19 @@ void __render(Game* game) {
     SDL_RenderPresent(game->renderer);
 }
 
+void __parse_arguments(Game* game, int32_t argc, char** args) {
+    for (int32_t i = 1; i <= argc; i++) {
+        if (args[i] && args[i][0] && args[i][1] && args[i][2] 
+            && (args[i][0] == 'w' || args[i][0] == 'h') && args[i][1] == '=') {
+                int32_t v = string_to_int(args[i]+2);
+                if (v > 0) {
+                    if (args[i][0] == 'w') game->width = v < 400 ? 400 : v;
+                    else game->height = v < 400 ? 400 : v;
+                }
+        }
+    }
+}
+
 void __init_SDL() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
@@ -87,8 +104,8 @@ void __init_window(Game* game) {
         "MyWindow",                 // window title
         SDL_WINDOWPOS_UNDEFINED,    // initial x position
         SDL_WINDOWPOS_UNDEFINED,    // initial y position
-        800,                        // width, in pixels
-        600,                        // height, in pixels
+        game->width,                // width, in pixels
+        game->height,               // height, in pixels
         SDL_WINDOW_OPENGL           // flags
     );
     if (game->window == NULL) {

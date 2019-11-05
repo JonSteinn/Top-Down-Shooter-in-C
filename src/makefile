@@ -20,13 +20,15 @@ CLOCK = gclock
 EVENT = gevent
 MATH = gmath
 PLAYER = player
+UTILS = utils
 
 DEPENDENCIES = \
 	$(GAME).o \
 	$(CLOCK).o \
 	$(EVENT).o \
 	$(MATH).o \
-	$(PLAYER).o
+	$(PLAYER).o \
+	$(UTILS).o
 
 define COMPILE
 $(1).o: $(1).c
@@ -46,6 +48,7 @@ $(call COMPILE,CLOCK)
 $(call COMPILE,EVENT)
 $(call COMPILE,MATH)
 $(call COMPILE,PLAYER)
+$(call COMPILE,UTILS)
 
 clean:
 	rm -f *.o
