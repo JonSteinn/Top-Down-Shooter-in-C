@@ -6,6 +6,7 @@ static void __parse_arguments(Game* game, int32_t argc, char** args, int32_t w, 
 static void __init_window(Game* game, int32_t w, int32_t h);
 static void __init_renderer(Game* game);
 static void __init_player(Game* game, float x, float y);
+static void __init_floor(Game* game);
 static void __process_events(Game* game);
 static void __update(Game* game);
 static void __render(Game* game);
@@ -27,10 +28,10 @@ Game* init_game(int32_t argc, char** args) {
     __init_window(game, w, h);
     __init_renderer(game);
     __init_player(game, game->width / 2.0f, game->height / 2.0f);
+    __init_floor(game);
 
     game->gevts = init_game_events();
     game->gclock = init_game_clock();
-
 
     return game;
 }
@@ -46,16 +47,13 @@ void start_game(Game* game) {
 }
 
 void destroy_game(Game* game) {
+    destroy_floor(game->floor);
     destroy_player(game->player);
     SDL_DestroyRenderer(game->renderer);
     SDL_DestroyWindow(game->window);
-
     destroy_game_clock(game->gclock);
     destroy_game_events(game->gevts);
-    
-
     free(game);
-    
     SDL_Quit();
 }
 
@@ -85,7 +83,8 @@ void __update(Game* game) {
 void __render(Game* game) {
     SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 255);
     SDL_RenderClear(game->renderer);
-    
+
+    draw_floor(game->renderer, game->floor, game->width, game->height);
     draw_player(game->renderer, game->player);
     
     SDL_RenderPresent(game->renderer);
@@ -150,6 +149,20 @@ void __init_renderer(Game* game) {
 void __init_player(Game* game, float x, float y) {
     game->player = init_player(game->renderer, x, y);
     if (game->player == NULL) {
+        SDL_DestroyRenderer(game->renderer);
+        SDL_DestroyWindow(game->window);
+        SDL_Quit();
+        free(game);
+        exit(EXIT_FAILURE);
+    }
+}
+
+void __init_floor(Game* game) {
+    game->floor = init_floor(game->renderer);
+    if (game->floor == NULL) {
+        destroy_player(game->player);
+        SDL_DestroyRenderer(game->renderer);
+        SDL_DestroyWindow(game->window);
         SDL_Quit();
         free(game);
         exit(EXIT_FAILURE);

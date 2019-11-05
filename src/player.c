@@ -16,12 +16,13 @@ Player* init_player(SDL_Renderer* renderer, float x, float y) {
 
 
     p->texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (surface == NULL) {
+    if (p->texture == NULL) {
         SDL_Log("Could not create texture from surface: %s\n", SDL_GetError());
         SDL_FreeSurface(surface);
         free(p);
         return NULL;   
     }
+
 
     SDL_FreeSurface(surface);
     

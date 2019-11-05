@@ -11,6 +11,7 @@
 #include "player.h"
 #include "gmath.h"
 #include "utils.h"
+#include "floor.h"
 
 /**
  * The main game object that keeps hold of all resources.
@@ -31,6 +32,8 @@
  *      The game's events
  *  player
  *      The game's player object
+ *  floor
+ *      The game's background tile
  */
 typedef struct {
     int32_t         width;
@@ -44,6 +47,7 @@ typedef struct {
     GameEvents*     gevts;
 
     Player*         player;
+    Floor*          floor;
 } Game;
 
 /**

@@ -21,6 +21,7 @@ EVENT = gevent
 MATH = gmath
 PLAYER = player
 UTILS = utils
+FLOOR = floor
 
 DEPENDENCIES = \
 	$(GAME).o \
@@ -28,7 +29,8 @@ DEPENDENCIES = \
 	$(EVENT).o \
 	$(MATH).o \
 	$(PLAYER).o \
-	$(UTILS).o
+	$(UTILS).o \
+	$(FLOOR).o
 
 define COMPILE
 $(1).o: $(1).c
@@ -49,6 +51,7 @@ $(call COMPILE,EVENT)
 $(call COMPILE,MATH)
 $(call COMPILE,PLAYER)
 $(call COMPILE,UTILS)
+$(call COMPILE,FLOOR)
 
 clean:
 	rm -f *.o

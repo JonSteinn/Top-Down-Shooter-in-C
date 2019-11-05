@@ -4,3 +4,5 @@
 * Collision
 * enemy animation + blood?
 * death (Game Over)
+* Sound effects
+* Music
