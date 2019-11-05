@@ -28,6 +28,18 @@ Player* init_player(SDL_Renderer* renderer, float x, float y) {
     return p;
 }
 
+void update_player(Player* player, GameEvents* gevts, float dt) {
+
+    if (gevts->move_left) player->position->x -= 0.1f * dt;
+    if (gevts->move_right) player->position->x += 0.1f * dt;
+    if (gevts->move_up) player->position->y -= 0.1f * dt;
+    if (gevts->move_down) player->position->y += 0.1f * dt;
+
+    float dx = gevts->mouseX - player->position->x;
+    float dy = gevts->mouseY - player->position->y;
+    player->rotation = sign(dy) * rad_to_deg(fast_acos(dx * carmack_inverse_sqrt(dx * dx + dy * dy)))
+}
+
 void draw_player(SDL_Renderer* renderer,Player* player) {
     SDL_Rect rect = { (int)player->position->x, (int)player->position->y, 25, 25 } ;
     SDL_RenderCopyEx(renderer, player->texture, NULL, &rect, player->rotation, NULL, SDL_FLIP_NONE);

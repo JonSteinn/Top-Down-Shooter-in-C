@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdlib.h>
+#include "gevent.h"
 #include "gmath.h"
 
 typedef struct {
@@ -14,6 +15,7 @@ typedef struct {
 } Player;
 
 Player* init_player(SDL_Renderer* renderer, float x, float y);
+void update_player(Player* player, GameEvents* gevts, float dt);
 void draw_player(SDL_Renderer* renderer, Player* player);
 void destroy_player(Player* player);
 

@@ -22,5 +22,14 @@ float carmack_inverse_sqrt(float x)
 }
 
 float fast_acos(float x) {
-   return (-0.69813170079773212f * x * x - 0.87266462599716477f) * x + 1.5707963267948966f;
+	return (-0.69813170079773212f * x * x - 0.87266462599716477f) * x + 1.5707963267948966f;
+}
+
+
+float rad_to_deg(float rad) {
+	return 180.0f * rad / gPI;
+}
+
+int sign(float x) {
+	return x < 0 ? -1 : x != 0;
 }

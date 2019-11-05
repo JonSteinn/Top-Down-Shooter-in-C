@@ -62,15 +62,8 @@ void __process_events(Game* game) {
 }
 
 
-void __update(Game* game) {    
-    if (game->gevt->move_left) game->player->position->x -= 0.1f * game->gclock->dt;
-    if (game->gevt->move_right) game->player->position->x += 0.1f * game->gclock->dt;
-    if (game->gevt->move_up) game->player->position->y -= 0.1f * game->gclock->dt;
-    if (game->gevt->move_down) game->player->position->y += 0.1f * game->gclock->dt;
-
-    float dx = game->gevt->mouseX - game->player->position->x;
-    float dy = game->gevt->mouseY - game->player->position->y;
-    game->player->rotation = (dy < 0 ? -1 : 1) * 180.0f * fast_acos(dx * carmack_inverse_sqrt(dx * dx + dy * dy)) / 3.14159265358979f;
+void __update(Game* game) {
+    update_player(game->player, game->gevt, game->gclock->dt);
 }
 
 void __render(Game* game) {
