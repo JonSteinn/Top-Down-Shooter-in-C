@@ -1,14 +1,10 @@
 #include "game.h"
 
-#define UNUSED(x) (void)x // TODO: remove
-
 static void __parse_arguments(Game* game, int32_t argc, char** args);
-
 static void __init_SDL();
 static void __init_window(Game* game);
 static void __init_renderer(Game* game);
 static void __init_player(Game* game, float x, float y);
-
 static void __process_events(Game* game);
 static void __update(Game* game);
 static void __render(Game* game);
@@ -26,9 +22,9 @@ Game* init_game(int32_t argc, char** args) {
 
     __init_window(game);
     __init_renderer(game);
-    __init_player(game, 400.0f, 300.0f);
+    __init_player(game, game->width / 2.0f, game->height / 2.0f);
 
-    game->gevt = init_game_events();
+    game->gevts = init_game_events();
     game->gclock = init_game_clock();
 
 
@@ -36,7 +32,7 @@ Game* init_game(int32_t argc, char** args) {
 }
 
 void start_game(Game* game) {
-
+    // GAME LOOP
     while (game->running) {       
         update_game_clock(game->gclock);
         __process_events(game);
@@ -51,7 +47,7 @@ void destroy_game(Game* game) {
     SDL_DestroyWindow(game->window);
 
     destroy_game_clock(game->gclock);
-    destroy_game_events(game->gevt);
+    destroy_game_events(game->gevts);
     
 
     free(game);
@@ -61,13 +57,13 @@ void destroy_game(Game* game) {
 
 
 void __process_events(Game* game) {
-    process_events(game->gevt);
-    game->running = !game->gevt->quit;
+    process_events(game->gevts);
+    game->running = !game->gevts->quit;
 }
 
 
 void __update(Game* game) {
-    update_player(game->player, game->gevt, game->gclock->dt);
+    update_player(game->player, game->gevts, game->gclock->dt);
 }
 
 void __render(Game* game) {
@@ -101,7 +97,7 @@ void __init_SDL() {
 
 void __init_window(Game* game) {
     game->window = SDL_CreateWindow(
-        "MyWindow",                 // window title
+        "Top dow shooter in C",     // window title
         SDL_WINDOWPOS_UNDEFINED,    // initial x position
         SDL_WINDOWPOS_UNDEFINED,    // initial y position
         game->width,                // width, in pixels

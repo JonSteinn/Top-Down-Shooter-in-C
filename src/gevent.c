@@ -9,6 +9,7 @@ GameEvents* init_game_events() {
     __set_to_default(gevts);
     return gevts;
 }
+
 void process_events(GameEvents* gevts) {
     __set_to_default(gevts);
     __poll_events(gevts);
@@ -20,7 +21,6 @@ void process_events(GameEvents* gevts) {
 void destroy_game_events(GameEvents* gevts) {
     free(gevts);
 }
-
 
 void __set_to_default(GameEvents* gevts) {
     gevts->quit         = false;
