@@ -35,6 +35,8 @@
  *      The game's player object
  *  floor
  *      The game's background tile
+ *  sound
+ *      The object that handles all in-game audio
  */
 typedef struct {
     int32_t         width;
@@ -49,6 +51,8 @@ typedef struct {
 
     Player*         player;
     Floor*          floor;
+
+    Sound*          sound;
 } Game;
 
 /**
