@@ -52,15 +52,15 @@ void __poll_events(GameEvents* gevts) {
 void __keyboard_state(GameEvents* gevts) {
     const Uint8 *state = SDL_GetKeyboardState(NULL);
 
-    if (state[SDL_SCANCODE_LEFT] && !state[SDL_SCANCODE_RIGHT]) {
+    if (state[SDL_SCANCODE_A] && !state[SDL_SCANCODE_D]) {
         gevts->move_left = true;
-    } else if (!state[SDL_SCANCODE_LEFT] && state[SDL_SCANCODE_RIGHT]) {
+    } else if (!state[SDL_SCANCODE_A] && state[SDL_SCANCODE_D]) {
         gevts->move_right = true;
     }
 
-    if (state[SDL_SCANCODE_UP] && !state[SDL_SCANCODE_DOWN]) {
+    if (state[SDL_SCANCODE_W] && !state[SDL_SCANCODE_S]) {
         gevts->move_up = true;
-    } else if (!state[SDL_SCANCODE_UP] && state[SDL_SCANCODE_DOWN]) {
+    } else if (!state[SDL_SCANCODE_W] && state[SDL_SCANCODE_S]) {
         gevts->move_down = true;
     }
 }

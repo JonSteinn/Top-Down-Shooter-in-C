@@ -37,7 +37,7 @@ void update_player(Player* player, GameEvents* gevts, float dt) {
 
     float dx = gevts->mouseX - player->position->x;
     float dy = gevts->mouseY - player->position->y;
-    player->rotation = sign(dy) * rad_to_deg(fast_acos(dx * carmack_inverse_sqrt(dx * dx + dy * dy)))
+    player->rotation = sign(dy) * rad_to_deg(fast_acos(dx * carmack_inverse_sqrt(dx * dx + dy * dy)));
 }
 
 void draw_player(SDL_Renderer* renderer,Player* player) {

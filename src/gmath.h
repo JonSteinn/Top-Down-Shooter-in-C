@@ -8,7 +8,7 @@ typedef struct {
 
 typedef Vector2d Point2d;
 
-const float gPI = 3.14159265358979f;
+static const float gPI = 3.14159265358979f;
 
 
 float carmack_inverse_sqrt(float x);
