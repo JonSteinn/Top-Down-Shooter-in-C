@@ -5,7 +5,6 @@
  * The program's starting point.
  */
 int32_t main(int32_t argc, char** args) {
-    Sound s;
     Game* game = init_game(argc, args);
     start_game(game);
     destroy_game(game);

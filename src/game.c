@@ -30,6 +30,8 @@ Game* init_game(int32_t argc, char** args) {
     __init_player(game, game->width / 2.0f, game->height / 2.0f);
     __init_floor(game);
 
+    init_sound();
+
     game->gevts = init_game_events();
     game->gclock = init_game_clock();
 
@@ -53,6 +55,7 @@ void destroy_game(Game* game) {
     SDL_DestroyWindow(game->window);
     destroy_game_clock(game->gclock);
     destroy_game_events(game->gevts);
+    Mix_CloseAudio();
     free(game);
     SDL_Quit();
 }
@@ -111,6 +114,12 @@ void __parse_arguments(Game* game, int32_t argc, char** args, int32_t w, int32_t
 void __init_SDL() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+        exit(EXIT_FAILURE);
+    }
+
+    if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1<<12) == -1) {
+        SDL_Log("Unable to initialize SDL audio: %s", SDL_GetError());
+        SDL_Quit();
         exit(EXIT_FAILURE);
     }
 }
