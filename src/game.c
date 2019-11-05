@@ -1,8 +1,9 @@
 #include "game.h"
 
-static void __parse_arguments(Game* game, int32_t argc, char** args);
 static void __init_SDL();
-static void __init_window(Game* game);
+static void __get_screen_resolution(int* w, int* h);
+static void __parse_arguments(Game* game, int32_t argc, char** args, int32_t w, int32_t h);
+static void __init_window(Game* game, int32_t w, int32_t h);
 static void __init_renderer(Game* game);
 static void __init_player(Game* game, float x, float y);
 static void __process_events(Game* game);
@@ -13,14 +14,17 @@ Game* init_game(int32_t argc, char** args) {
 
     __init_SDL();
 
+    int32_t w, h;
+    __get_screen_resolution(&w, &h);
+
     Game* game = (Game*)malloc(sizeof(Game));
     game->running = true;
     game->width = 800;
     game->height = 600;
 
-    __parse_arguments(game, argc, args);
+    __parse_arguments(game, argc, args, w, h);
 
-    __init_window(game);
+    __init_window(game, w, h);
     __init_renderer(game);
     __init_player(game, game->width / 2.0f, game->height / 2.0f);
 
@@ -56,6 +60,18 @@ void destroy_game(Game* game) {
 }
 
 
+static void __get_screen_resolution(int* w, int* h) {
+    SDL_DisplayMode DM;
+    if (SDL_GetDesktopDisplayMode(0, &DM) < 0) {
+        SDL_Log("Getting screen resolution failed: %s", SDL_GetError());
+        SDL_Quit();
+        exit(EXIT_FAILURE);
+    }
+    *w = DM.w;
+    *h = DM.h;
+}
+
+
 void __process_events(Game* game) {
     process_events(game->gevts);
     game->running = !game->gevts->quit;
@@ -75,15 +91,16 @@ void __render(Game* game) {
     SDL_RenderPresent(game->renderer);
 }
 
-void __parse_arguments(Game* game, int32_t argc, char** args) {
+void __parse_arguments(Game* game, int32_t argc, char** args, int32_t w, int32_t h) {
+
     for (int32_t i = 1; i <= argc; i++) {
         if (args[i] && args[i][0] && args[i][1] && args[i][2] 
             && (args[i][0] == 'w' || args[i][0] == 'h') && args[i][1] == '=') {
+
                 int32_t v = string_to_int(args[i]+2);
-                if (v > 0) {
-                    if (args[i][0] == 'w') game->width = v < 400 ? 400 : v;
-                    else game->height = v < 400 ? 400 : v;
-                }
+                if (args[i][0] == 'w') game->width = v < 400 ? 400 : (v > 0.9f * w ? w : v);
+                if (args[i][0] == 'h') game->height = v < 400 ? 400 : (v > 0.9f * h ? h : v);
+
         }
     }
 }
@@ -95,14 +112,17 @@ void __init_SDL() {
     }
 }
 
-void __init_window(Game* game) {
+void __init_window(Game* game, int32_t w, int32_t h) {
+    bool full_screen = game->width == w || game->height == h;
+    Uint32 flags = SDL_WINDOW_OPENGL;
+    if (full_screen) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     game->window = SDL_CreateWindow(
         "Top dow shooter in C",     // window title
         SDL_WINDOWPOS_UNDEFINED,    // initial x position
         SDL_WINDOWPOS_UNDEFINED,    // initial y position
         game->width,                // width, in pixels
         game->height,               // height, in pixels
-        SDL_WINDOW_OPENGL           // flags
+        flags                       // flags
     );
     if (game->window == NULL) {
         SDL_Log("Could not create window: %s\n", SDL_GetError());
