@@ -33,3 +33,7 @@ float rad_to_deg(float rad) {
 int sign(float x) {
 	return x < 0 ? -1 : x != 0;
 }
+
+float length_squared(Vector2d* v) {
+    return v->x*v->x+v->y*v->y;
+}

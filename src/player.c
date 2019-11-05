@@ -28,16 +28,16 @@ Player* init_player(SDL_Renderer* renderer, float x, float y) {
     return p;
 }
 
+
 void update_player(Player* player, GameEvents* gevts, float dt) {
 
-    if (gevts->move_left) player->position->x -= 0.1f * dt;
-    if (gevts->move_right) player->position->x += 0.1f * dt;
-    if (gevts->move_up) player->position->y -= 0.1f * dt;
-    if (gevts->move_down) player->position->y += 0.1f * dt;
+    if (gevts->move_left) player->position->x -= 0.15f * dt;
+    if (gevts->move_right) player->position->x += 0.15f * dt;
+    if (gevts->move_up) player->position->y -= 0.15f * dt;
+    if (gevts->move_down) player->position->y += 0.15f * dt;
 
-    float dx = gevts->mouseX - player->position->x;
-    float dy = gevts->mouseY - player->position->y;
-    player->rotation = sign(dy) * rad_to_deg(fast_acos(dx * carmack_inverse_sqrt(dx * dx + dy * dy)));
+    Vector2d d = {gevts->mouseX - player->position->x, gevts->mouseY - player->position->y};
+    player->rotation = sign(d.y) * rad_to_deg(fast_acos(d.x * carmack_inverse_sqrt(length_squared(&d))));
 }
 
 void draw_player(SDL_Renderer* renderer,Player* player) {

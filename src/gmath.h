@@ -38,4 +38,9 @@ float rad_to_deg(float rad);
  */
 int sign(float x);
 
+/**
+ * Returns the square of the vector's length.
+ */
+float length_squared(Vector2d* v);
+
 #endif
