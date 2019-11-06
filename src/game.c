@@ -14,6 +14,7 @@ static void __update(Game* game);
 static void __render(Game* game);
 
 Game* init_game(int32_t argc, char** args) {
+    srand(time(NULL));
 
     __init_SDL();
 
@@ -87,6 +88,7 @@ void __process_events(Game* game) {
 
 void __update(Game* game) {
     update_player(game->player, game->gevts, game->gclock->dt, game->width, game->height);
+    update_enemies(game->enemies, game->gclock->dt);
 }
 
 void __render(Game* game) {
@@ -94,6 +96,7 @@ void __render(Game* game) {
     SDL_RenderClear(game->renderer);
 
     draw_floor(game->renderer, game->floor, game->width, game->height);
+    draw_enemies(game->renderer, game->enemies);
     draw_player(game->renderer, game->player);
     
     SDL_RenderPresent(game->renderer);
