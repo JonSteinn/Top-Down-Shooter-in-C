@@ -7,6 +7,7 @@ static void __init_window(Game* game, int32_t w, int32_t h);
 static void __init_renderer(Game* game);
 static void __init_sound(Game* game);
 static void __init_player(Game* game, float x, float y);
+static void __init_enemies(Game* game, int32_t count);
 static void __init_floor(Game* game);
 static void __process_events(Game* game);
 static void __update(Game* game);
@@ -30,6 +31,7 @@ Game* init_game(int32_t argc, char** args) {
     __init_renderer(game);
     __init_sound(game);
     __init_player(game, game->width / 2.0f, game->height / 2.0f);
+    __init_enemies(game, 1); // TODO: more than 1
     __init_floor(game);
 
 
@@ -51,6 +53,7 @@ void start_game(Game* game) {
 
 void destroy_game(Game* game) {
     destroy_floor(game->floor);
+    destroy_enemies(game->enemies);
     destroy_player(game->player);
     SDL_DestroyRenderer(game->renderer);
     SDL_DestroyWindow(game->window);
@@ -184,10 +187,24 @@ void __init_player(Game* game, float x, float y) {
     }
 }
 
+void __init_enemies(Game* game, int32_t count) {
+    game->enemies = init_enemies(game->renderer, count);
+    if (game->enemies == NULL) {
+        SDL_DestroyRenderer(game->renderer);
+        SDL_DestroyWindow(game->window);
+        Mix_CloseAudio();
+        SDL_Quit();
+        destroy_player(game->player);
+        free(game);
+        exit(EXIT_FAILURE);
+    }
+}
+
 void __init_floor(Game* game) {
     game->floor = init_floor(game->renderer);
     if (game->floor == NULL) {
         destroy_player(game->player);
+        destroy_enemies(game->enemies);
         SDL_DestroyRenderer(game->renderer);
         SDL_DestroyWindow(game->window);
         Mix_CloseAudio();
@@ -196,3 +213,11 @@ void __init_floor(Game* game) {
         exit(EXIT_FAILURE);
     }
 }
+
+/*
+TODO:
+
+Create a better clean up system for fails...
+
+bitmask options ... or something..
+*/

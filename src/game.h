@@ -13,6 +13,7 @@
 #include "utils.h"
 #include "floor.h"
 #include "sound.h"
+#include "enemies.h"
 
 /**
  * The main game object that keeps hold of all resources.
@@ -50,6 +51,7 @@ typedef struct {
     GameEvents*     gevts;
 
     Player*         player;
+    Enemies*        enemies;
     Floor*          floor;
 
     Sound*          sound;
