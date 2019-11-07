@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdlib.h>
 #include "game.h"
 
 /**
@@ -8,19 +9,19 @@
  * Purpose:
  *  The program's starting point.
  * 
- * argc: 
- *  The number of arguments 
- * args:
- *  The list of arguments
+ * Parameters:
+ * - argc: 
+ *      The number of arguments 
+ * - args:
+ *      The list of arguments
  * 
  * returns: 
  *  0 on succcess, 1 otherwise.
  */
 int32_t main(int32_t argc, char** args) {
-
-    foo();
     Game* game = init_game(argc, args);
     start_game(game);
     destroy_game(game);
-    return 0;
+
+    return EXIT_SUCCESS;
 }
