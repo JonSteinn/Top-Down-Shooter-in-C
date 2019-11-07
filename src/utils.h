@@ -7,9 +7,18 @@
 #include <stdlib.h>
 
 /**
- * Attempt to convert a string to an integer. 
+ * Function:
+ *  string_to_int
  * 
- * Returns the integer if successful, -1 otherwise.
+ * Purpose:
+ *  Converts a string to a positive integer.
+ * 
+ * Parameters:
+ * - str: 
+ *      The string to convert
+ * 
+ * returns: 
+ *  The converted integer on success, -1 otherwise.
  */
 int32_t string_to_int(const char* str);
 
