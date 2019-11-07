@@ -32,7 +32,7 @@ Game* init_game(int32_t argc, char** args) {
     __init_renderer(game);
     __init_sound(game);
     __init_player(game, game->width / 2.0f, game->height / 2.0f);
-    __init_enemies(game, 1); // TODO: more than 1
+    __init_enemies(game, 100);
     __init_floor(game);
 
 
@@ -88,7 +88,7 @@ void __process_events(Game* game) {
 
 void __update(Game* game) {
     update_player(game->player, game->gevts, game->gclock->dt, game->width, game->height);
-    update_enemies(game->enemies, game->gclock->dt);
+    update_enemies(game->enemies, game->gclock->dt, game->player->position, game->width, game->height);
 }
 
 void __render(Game* game) {
@@ -191,7 +191,7 @@ void __init_player(Game* game, float x, float y) {
 }
 
 void __init_enemies(Game* game, int32_t count) {
-    game->enemies = init_enemies(game->renderer, count);
+    game->enemies = init_enemies(game->renderer, count, game->width, game->height);
     if (game->enemies == NULL) {
         SDL_DestroyRenderer(game->renderer);
         SDL_DestroyWindow(game->window);

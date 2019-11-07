@@ -10,7 +10,6 @@
 
 typedef struct {
     Point2d     position;
-    Vector2d    velocity;
     float       rotation;
     float       statef;
     int32_t     state;
@@ -25,9 +24,9 @@ typedef struct {
 } Enemies;
 
 
-Enemies* init_enemies(SDL_Renderer* renderer, int32_t max_enemies);
+Enemies* init_enemies(SDL_Renderer* renderer, int32_t max_enemies, int32_t w, int32_t h);
 
-void update_enemies(Enemies* enemies, float dt);
+void update_enemies(Enemies* enemies, float dt, Point2d* p_pos, int32_t w, int32_t h);
 void draw_enemies(SDL_Renderer* renderer, Enemies* enemies);
 
 void destroy_enemies(Enemies* enemies);
