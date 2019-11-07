@@ -24,10 +24,6 @@ make -C src
 ```
 
 ## TODO:
-1. Render enemies
-2. Move enemies
-3. Animate enemies
-4. Respawn enemies
 5. Collision enemy+player
 6. Data structure for bullets (pre-allocated hashset?)
 7. Render Bullets
