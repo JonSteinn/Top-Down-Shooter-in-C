@@ -11,11 +11,11 @@ static const uint32_t FREE_MUSIC = 1u<<0;
 static const uint32_t FREE_MEMORY = 1u<<1;
 
 // Path to music file
-static const char music_path[] = "assets/sounds/music/music.mp3";
+static const char MUSIC_PATH[] = "assets/sounds/music/music.mp3";
 // Error message when music file is not found
-static const char load_music_log[] = "Did not find music asset: %s";
+static const char LOAD_MUSIC_LOG[] = "Did not find music asset: %s";
 // Error message when playing music fails
-static const char play_music_log[] = "Can't play music: %s";
+static const char PLAY_MUSIC_LOG[] = "Can't play music: %s";
 
 /**
  * Function:
@@ -99,11 +99,11 @@ void destroy_sound(Sound* sound) {
  * Releases memory of sound if fails to load music.
  */
 static bool __load_music(Sound* sound) {
-    sound->music = Mix_LoadMUS(music_path);
+    sound->music = Mix_LoadMUS(MUSIC_PATH);
 
     // If fails
     if (sound->music == NULL) {
-        SDL_Log(load_music_log, SDL_GetError());
+        SDL_Log(LOAD_MUSIC_LOG, SDL_GetError());
         __destroy(sound, FREE_MEMORY);
         return false;
     }
@@ -118,7 +118,7 @@ static bool __load_music(Sound* sound) {
 static bool __play_music(Sound* sound) {
     // If fails
     if (Mix_PlayMusic(sound->music, -1) == -1) {
-        SDL_Log(play_music_log, SDL_GetError());
+        SDL_Log(PLAY_MUSIC_LOG, SDL_GetError());
         __destroy(sound, FREE_MUSIC | FREE_MEMORY);
         return false;
     }

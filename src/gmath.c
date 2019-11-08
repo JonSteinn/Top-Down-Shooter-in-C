@@ -9,7 +9,7 @@ static const float PI_HALF = 1.570796326794896619231f;
  * John Carmack's infamous inverse sqrt from Quake3 Arena.
  * (Not really his but he famously utilised it)
  * 
- * Preprocessor Directive added to supress warnings the
+ * Preprocessor directive added to supress warnings the
  * original code produces, otherwise directly taken from
  * Quake3's source.
  */

@@ -91,7 +91,7 @@ void __process_events(Game* game) {
 
 void __update(Game* game) {
     update_player(game->player, game->gevts, game->gclock->dt, game->width, game->height);
-    update_enemies(game->enemies, game->gclock->dt, game->player->position, game->width, game->height);
+    update_enemies(game->enemies, game->gclock->dt, &game->player->position, game->width, game->height);
 }
 
 void __render(Game* game) {
