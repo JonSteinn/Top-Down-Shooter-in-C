@@ -1,8 +1,10 @@
 #ifndef pLe9jzg2Qv_SOUND_H
 #define pLe9jzg2Qv_SOUND_H
 
+#include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 
