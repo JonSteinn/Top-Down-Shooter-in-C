@@ -1,5 +1,8 @@
 #include "game.h"
 
+/**
+ * 
+ */
 static void __init_SDL();
 static void __get_screen_resolution(int* w, int* h);
 static void __parse_arguments(Game* game, int32_t argc, char** args, int32_t w, int32_t h);

@@ -17,9 +17,14 @@
 #include <time.h>
 
 /**
- * The main game object that keeps hold of all resources.
+ * Struct:
+ *  Game
  * 
- *  width
+ * Purpose:
+ *  The main game object that keeps hold of all resources.
+ * 
+ * Fields:
+ *  - width
  *      The window's width 
  *  height
  *      The window's height
@@ -72,5 +77,6 @@ void start_game(Game* game);
  * Free all game resources.
  */
 void destroy_game(Game* game);
+
 
 #endif

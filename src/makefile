@@ -6,6 +6,7 @@ CFLAGS = \
 	-Wall \
 	-Wextra \
 	-Wformat=2 \
+	-DDEBUG \
 	$(shell pkg-config --cflags sdl2) \
 	$(shell pkg-config --cflags SDL2_image) \
 	$(shell pkg-config --cflags SDL2_mixer)

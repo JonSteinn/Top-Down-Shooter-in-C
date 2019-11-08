@@ -11,9 +11,9 @@
  * 
  * Parameters:
  * - argc: 
- *      The number of arguments 
+ *      The number of arguments.
  * - args:
- *      The list of arguments
+ *      The list of arguments.
  * 
  * returns: 
  *  0 on succcess, 1 otherwise.
