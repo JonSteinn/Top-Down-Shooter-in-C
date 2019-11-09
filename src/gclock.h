@@ -2,19 +2,25 @@
 #define JqdBnUmofN_GCLOCK_H
 
 #include <stdlib.h>
+
 #include <SDL2/SDL.h>
 
 /**
- * A game clock object that keeps hold of our framerate.
+ * Struct:
+ *  GameClock
  * 
- *  now
- *      The time this frame
- *  last
- *      The time last frame
- *  dt
- *      The time between the frames
- *  fps
- *      1 / dt
+ * Purpose:
+ *  Keeps track of time between frames.
+ * 
+ * Fields:
+ *  - now: 
+ *      The time this frame.
+ *  - last: 
+ *      The time last frame.
+ *  - dt: 
+ *      The time between frames in seconds.
+ *  - fps: 
+ *      The multiplicative inverse of dt.
  */
 typedef struct {
     Uint64  now;
@@ -24,17 +30,47 @@ typedef struct {
 } GameClock;
 
 /**
- * Allocate resources for the game clock.
+ * Function:
+ *  init_game_clock
+ * 
+ * Purpose:
+ *  Create and intialize GameClock object.
+ * 
+ * Parameters:
+ *  None.
+ * 
+ * Returns:
+ *  A GameClock object.
  */
 GameClock* init_game_clock();
 
 /**
- * Calculate the time between frames.
+ * Function:
+ *  update_game_clock
+ * 
+ * Purpose:
+ *  Calculate the time between frames.
+ * 
+ * Parameters:
+ *  The GameClock object.
+ * 
+ * Returns:
+ *  Nothing.
  */
 void update_game_clock(GameClock* gclock);
 
 /**
- * Free resources for the game clock.
+ * Function:
+ *  destroy_game_clock
+ * 
+ * Purpose:
+ *  Free resources for the GameClock object.
+ * 
+ * Parameters:
+ *  The GameClock object.
+ * 
+ * Returns:
+ *  Nothing.
  */
 void destroy_game_clock(GameClock* gclock);
 
