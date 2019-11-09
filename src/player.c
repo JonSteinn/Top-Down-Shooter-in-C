@@ -12,7 +12,6 @@ static const uint32_t FREE_MEMORY = 1u<<1;
 // Release SDL texture data
 static const uint32_t FREE_TEXTURE = 1u<<2;
 
-
 // Path to sprite file
 static const char SPRITE_PATH[] = "assets/sprites/player.png";
 // Error message when loading image failed
@@ -24,18 +23,139 @@ static const char QUERY_TEXTURE_LOG[] = "Could not query texture: %s\n";
 // The scaling factor for all movement directions
 static const float PLAYER_SPEED = 0.2f;
 
-
+/**
+ * Function:
+ *  ...
+ * 
+ * Purpose:
+ *  ...
+ * 
+ * Parameters:
+ *  - ...:
+ *      ...
+ * 
+ * Returns:
+ *  ...
+ */
 static void __move_left(Player* player, float dt);
+
+/**
+ * Function:
+ *  ...
+ * 
+ * Purpose:
+ *  ...
+ * 
+ * Parameters:
+ *  - ...:
+ *      ...
+ * 
+ * Returns:
+ *  ...
+ */
 static void __move_right(Player* player, float dt, int32_t w);
+
+/**
+ * Function:
+ *  ...
+ * 
+ * Purpose:
+ *  ...
+ * 
+ * Parameters:
+ *  - ...:
+ *      ...
+ * 
+ * Returns:
+ *  ...
+ */
 static void __move_up(Player* player, float dt);
+
+/**
+ * Function:
+ *  ...
+ * 
+ * Purpose:
+ *  ...
+ * 
+ * Parameters:
+ *  - ...:
+ *      ...
+ * 
+ * Returns:
+ *  ...
+ */
 static void __move_down(Player* player, float dt, int32_t h);
+
+/**
+ * Function:
+ *  ...
+ * 
+ * Purpose:
+ *  ...
+ * 
+ * Parameters:
+ *  - ...:
+ *      ...
+ * 
+ * Returns:
+ *  ...
+ */
 static void __rotate(Player* player, GameEvents* gevts);
+
+/**
+ * Function:
+ *  ...
+ * 
+ * Purpose:
+ *  ...
+ * 
+ * Parameters:
+ *  - ...:
+ *      ...
+ * 
+ * Returns:
+ *  ...
+ */
 static void __destroy(Player* player, SDL_Surface* surface, uint32_t mask);
+
+/**
+ * Function:
+ *  ...
+ * 
+ * Purpose:
+ *  ...
+ * 
+ * Parameters:
+ *  - ...:
+ *      ...
+ * 
+ * Returns:
+ *  ...
+ */
 static bool __create_texture(SDL_Renderer* renderer, SDL_Surface* surface, Player* play);
+
+/**
+ * Function:
+ *  ...
+ * 
+ * Purpose:
+ *  ...
+ * 
+ * Parameters:
+ *  - ...:
+ *      ...
+ * 
+ * Returns:
+ *  ...
+ */
 static bool __query_texture(Player* player, SDL_Surface* surface);
 
 /**
- * 
+ * We begin by loading image and if that fails, we stop there.
+ * At any point when the initialization fails, we must release
+ * previously allocated resources at that point. SDL_Surface
+ * does not need to be stored.
  */
 Player* init_player(SDL_Renderer* renderer, float x, float y) {
     SDL_Surface* surface = IMG_Load(SPRITE_PATH);
@@ -49,6 +169,7 @@ Player* init_player(SDL_Renderer* renderer, float x, float y) {
     if (!__create_texture(renderer, surface, p)) return NULL;
     if (!__query_texture(p, surface)) return NULL;
     
+    // The lesser of the two.
     p->collision_circumference = p->texture_width < p->texture_height ? p->texture_width : p->texture_height;
     p->position = (Point2d){x, y};
 
@@ -58,7 +179,10 @@ Player* init_player(SDL_Renderer* renderer, float x, float y) {
 }
 
 /**
- * 
+ * Move the player in any requested direction as long as he
+ * will not leave the screen and then rotate him towards
+ * the mouse.Does not take into account the rotation of the 
+ * player and the fact that half the sprite is a gun.
  */
 void update_player(Player* player, GameEvents* gevts, float dt, int32_t w, int32_t h) {
     if (gevts->move_left) __move_left(player, dt);
@@ -83,14 +207,15 @@ void draw_player(SDL_Renderer* renderer,Player* player) {
 }
 
 /**
- * 
+ * Does not need to release the surface, hence we
+ * do not use the FREE_ALL mask.
  */
 void destroy_player(Player* player) {
     __destroy(player, NULL, FREE_TEXTURE | FREE_MEMORY);
 }
 
 /**
- * 
+ * Moves left if we are not too close to the left border. 
  */
 static void __move_left(Player* player, float dt) {
     player->position.x -= PLAYER_SPEED * dt;
@@ -98,7 +223,7 @@ static void __move_left(Player* player, float dt) {
 }
 
 /**
- * 
+ * Moves right if we are not too close to the right border. 
  */
 static void __move_right(Player* player, float dt, int32_t w) {
     player->position.x += PLAYER_SPEED * dt;
@@ -108,7 +233,7 @@ static void __move_right(Player* player, float dt, int32_t w) {
 }
 
 /**
- * 
+ * Moves up if we are not too close to the upper border.
  */
 static void __move_up(Player* player, float dt) {
     player->position.y -= PLAYER_SPEED * dt;
@@ -116,7 +241,7 @@ static void __move_up(Player* player, float dt) {
 }
 
 /**
- * 
+ * Moves down if we are not too close to the lower border.
  */
 static void __move_down(Player* player, float dt, int32_t h) {
     player->position.y += PLAYER_SPEED * dt;
@@ -126,15 +251,33 @@ static void __move_down(Player* player, float dt, int32_t h) {
 }
 
 /**
+ * Let P be the position of the player and M the position of the mouse.
+ * Then the angle between the vector v=[P to M] and u=[1,0] is the angle
+ * we are looking for. Note the u=[1,0] is chosen because the sprite
+ * faces east with no rotation.
  * 
+ * cos(x) = (v*u) / (|v|*|u|)
+ *        = (1*v_x + 0*v_y) / ( sqrt(1*1+0+0) + sqrt(v_x*v_x + v_y*v_y))
+ *        = v_x / (sqrt(1) * sqrt(|v|*|v|))
+ *        = v_x / sqrt(|v|*|v|)
+ * => x = arccos(v_x / sqrt(|v| * |v|))
+ * 
+ * Since arccos always chooses the lesser of angles betwee two vectorss 
+ * (if there is a 120° angle between some vectors, there is also a 240° 
+ * angle between them in the other direction), we multiply with the sign 
+ * of v_y to rotate in the correct direction. The SDL rotation requires 
+ * degrees so we finally convert our radians to degrees.
  */
 static void __rotate(Player* player, GameEvents* gevts) {
-    Vector2d d = {gevts->mouseX - player->position.x, gevts->mouseY - player->position.y};
-    player->rotation = sign(d.y) * rad_to_deg(fast_acos(d.x * carmack_inverse_sqrt(length_squared(&d))));
+    Vector2d d = {
+        gevts->mouseX - player->position.x, 
+        gevts->mouseY - player->position.y
+    };
+    player->rotation = rad_to_deg(sign(d.y) * fast_acos(d.x * carmack_inverse_sqrt(length_squared(&d))));
 }
 
 /**
- * 
+ * Check each resources against mask before releasing.
  */
 static void __destroy(Player* player, SDL_Surface* surface, uint32_t mask) {
     if (mask & FREE_SURFACE) SDL_FreeSurface(surface);
@@ -143,7 +286,8 @@ static void __destroy(Player* player, SDL_Surface* surface, uint32_t mask) {
 }
 
 /**
- * 
+ * Releases the surface resources and Player memory if we fail
+ * to create the texture.
  */
 static bool __create_texture(SDL_Renderer* renderer, SDL_Surface* surface, Player* player) {
     player->texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -156,7 +300,8 @@ static bool __create_texture(SDL_Renderer* renderer, SDL_Surface* surface, Playe
 }
 
 /**
- * 
+ * Releases the surface and texture resources and Player memory
+ * if we fail to query the texture.
  */
 static bool __query_texture(Player* player, SDL_Surface* surface) {
     if (SDL_QueryTexture(player->texture, NULL, NULL, &player->texture_width, &player->texture_height) < 0) {
