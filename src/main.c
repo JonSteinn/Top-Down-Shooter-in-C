@@ -20,7 +20,6 @@
  *  0 on succcess, 1 otherwise.
  */
 int32_t main(int32_t argc, char** args) {
-
     // Initialize game
     Game* game = init_game(argc, args);
 

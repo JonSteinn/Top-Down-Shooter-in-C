@@ -1,53 +1,92 @@
 #ifndef CupWKT1yp6_GEVENT_H
 #define CupWKT1yp6_GEVENT_H
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
 #include <SDL2/SDL.h>
 
 /**
- * A game specific event object.
+ * Struct:
+ *  GameEvents
  * 
- *  quit
- *      Did the player press ESC?
- *  move_left
+ * Purpose:
+ *  A game specific mapping of input events.
+ * 
+ * Fields
+ *  - quit:
+ *      Did the player press ESC or close window?
+ *  - move_left:
  *      Did the player move left this frame?
- *  move_right
+ *  - move_right:
  *      Did the player move right this frame?
- *  move_up
+ *  - move_up:
  *      Did the player move up this frame?
- *  move_down
+ *  - move_down:
  *      Did the player move down this frame?
- *  shoot
+ *  - shoot:
  *      Is the left mouse button down?
- *  mouseX
- *      The horizontal coordinate of the mouse this frame
- *  mouseY
- *      The vertical coordinate of the mouse this frame
+ *  - mouseX:
+ *      The horizontal coordinate of the mouse this frame.
+ *  - mouseY:
+ *      The vertical coordinate of the mouse this frame.
  */
 typedef struct {
-    bool quit;
-    bool move_left;
-    bool move_right;
-    bool move_up;
-    bool move_down;
-    bool shoot;
-    int mouseX;
-    int mouseY;
+    bool        quit:1;
+    bool        move_left:1;
+    bool        move_right:1;
+    bool        move_up:1;
+    bool        move_down:1;
+    bool        shoot:1;
+    int32_t     mouseX;
+    int32_t     mouseY;
 } GameEvents;
 
 /**
- * Allocate resources for the event object.
+ * Function:
+ *  init_game_events
+ * 
+ * Purpose:
+ *  Create and intialize GameEvents object.
+ * 
+ * Parameters:
+ *  None.
+ * 
+ * Returns:
+ *  A GameEvents object.
  */
 GameEvents* init_game_events();
 
 /**
- * Turn SDL's events into our game events.
+ * Function:
+ *  process_events
+ * 
+ * Purpose:
+ *  Check which events happened during this frame.
+ * 
+ * Parameters:
+ *  - gevts:
+ *      The GameEvents object to process.
+ * 
+ * Returns:
+ *  Nothing.
  */
 void process_events(GameEvents* gevts);
 
 /**
- * Free resources for the event object.
+ * Function:
+ *  destroy_game_events
+ * 
+ * Purpose:
+ *  Free resources for the GameEvents object.
+ * 
+ * Parameters:
+ *  - gevts:
+ *      The GameEvents object to destroy.
+ * 
+ * Returns:
+ *  Nothing.
  */
 void destroy_game_events(GameEvents* gevts);
 
