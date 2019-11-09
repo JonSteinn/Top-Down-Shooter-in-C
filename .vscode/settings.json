@@ -14,5 +14,7 @@
     "files.exclude": {
         "**/*.exe": true,
         "**/*.o": true
-    }
+    },
+    "files.trimTrailingWhitespace": true,
+    "files.trimFinalNewlines": true
 }

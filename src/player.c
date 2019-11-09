@@ -322,7 +322,7 @@ static bool __create_texture(SDL_Renderer* renderer, SDL_Surface* surface, Playe
     if (player->texture == NULL) {
         SDL_Log(CREATE_TEXTURE_LOG, SDL_GetError());
         __destroy(player, surface, FREE_SURFACE | FREE_MEMORY);
-        return false;   
+        return false;
     }
     return true;
 }
@@ -335,7 +335,7 @@ static bool __query_texture(Player* player, SDL_Surface* surface) {
     if (SDL_QueryTexture(player->texture, NULL, NULL, &player->texture_width, &player->texture_height) < 0) {
         SDL_Log(QUERY_TEXTURE_LOG, SDL_GetError());
         __destroy(player, surface, FREE_ALL);
-        return false;   
+        return false;
     }
     return true;
 }
