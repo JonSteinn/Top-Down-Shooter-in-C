@@ -25,129 +25,157 @@ static const float PLAYER_SPEED = 0.2f;
 
 /**
  * Function:
- *  ...
+ *  __move_left
  * 
  * Purpose:
- *  ...
+ *  Move the player to the left.
  * 
  * Parameters:
- *  - ...:
- *      ...
+ *  - player:
+ *      The player object.
+ *  - dt:
+ *      Delta time.
  * 
  * Returns:
- *  ...
+ *  Nothing
  */
 static void __move_left(Player* player, float dt);
 
 /**
  * Function:
- *  ...
+ *  __move_right
  * 
  * Purpose:
- *  ...
+ *  Move the player to the right.
  * 
  * Parameters:
- *  - ...:
- *      ...
+ *  - player:
+ *      The player object.
+ *  - dt:
+ *      Delta time.
+ *  - w:
+ *      The width of the window.
  * 
  * Returns:
- *  ...
+ *  Nothing.
  */
 static void __move_right(Player* player, float dt, int32_t w);
 
 /**
  * Function:
- *  ...
+ *  __move_up
  * 
  * Purpose:
- *  ...
+ *  Move the player to the up.
  * 
  * Parameters:
- *  - ...:
- *      ...
+ *  - player:
+ *      The player object.
+ *  - dt:
+ *      Delta time.
  * 
  * Returns:
- *  ...
+ *  Nothing.
  */
 static void __move_up(Player* player, float dt);
 
 /**
  * Function:
- *  ...
+ *  __move_down
  * 
  * Purpose:
- *  ...
+ *  Move the player to the down.
  * 
  * Parameters:
- *  - ...:
- *      ...
+ *  - player:
+ *      The player object.
+ *  - dt:
+ *      Delta time.
+ *  - h:
+ *      The height of the window.
  * 
  * Returns:
- *  ...
+ *  Nothing.
  */
 static void __move_down(Player* player, float dt, int32_t h);
 
 /**
  * Function:
- *  ...
+ *  __rotate
  * 
  * Purpose:
- *  ...
+ *  Rotate the player towards the mouse.
  * 
  * Parameters:
- *  - ...:
- *      ...
+ *  - player:
+ *      The player object.
+ *  - gevts:
+ *      The game events that occured.
  * 
  * Returns:
- *  ...
+ *  Nothing.
  */
 static void __rotate(Player* player, GameEvents* gevts);
 
 /**
  * Function:
- *  ...
+ *  __destroy
  * 
  * Purpose:
- *  ...
+ *  Release resources of the Player object.
  * 
  * Parameters:
- *  - ...:
- *      ...
+ *  - player:
+ *      The player object.
+ *  - surface:
+ *      SDL_Surface that only lives in function scopes.
+ *  - mask:
+ *      A mask to choose which resources are destroyed.
+ *      FREE_ALL
+ *      FREE_SURFACE
+ *      FREE_MEMORY
+ *      FREE_TEXTURE
  * 
  * Returns:
- *  ...
+ *  Nothing.
  */
 static void __destroy(Player* player, SDL_Surface* surface, uint32_t mask);
 
 /**
  * Function:
- *  ...
+ *  __create_texture
  * 
  * Purpose:
- *  ...
+ *  Create a texture from an existing surface.
  * 
  * Parameters:
- *  - ...:
- *      ...
+ *  - renderer:
+ *      A structure that contains a rendering state.
+ *  - surface:
+ *      A structure that contains a collection of pixels used in software blitting. 
+ *  - player
+ *      The player object.
  * 
  * Returns:
- *  ...
+ *  true if successful, false otherwise.
  */
-static bool __create_texture(SDL_Renderer* renderer, SDL_Surface* surface, Player* play);
+static bool __create_texture(SDL_Renderer* renderer, SDL_Surface* surface, Player* player);
 
 /**
  * Function:
- *  ...
+ *  __query_texture
  * 
  * Purpose:
- *  ...
+ *  Query texture for its dimension.
  * 
  * Parameters:
- *  - ...:
- *      ...
+ *  - player:
+ *      The Player object.
+ *  - surface:
+ *      A structure that contains a collection of pixels used in software blitting. 
  * 
  * Returns:
- *  ...
+ *  true if successful, false otherwise.
  */
 static bool __query_texture(Player* player, SDL_Surface* surface);
 
