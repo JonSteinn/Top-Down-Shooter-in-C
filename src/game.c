@@ -35,7 +35,7 @@ Game* init_game(int32_t argc, char** args) {
     __init_renderer(game);
     __init_sound(game);
     __init_player(game, game->width / 2.0f, game->height / 2.0f);
-    __init_enemies(game, 15);
+    __init_enemies(game, 1);
     __init_floor(game);
 
 
