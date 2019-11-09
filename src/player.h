@@ -15,13 +15,13 @@
 /**
  * Struct:
  *  Player
- * 
+ *
  * Purpose:
  *  Holds on to all player related resources.
- * 
+ *
  * Fields
  *  - texture:
- *      A structure that contains an efficient, driver-specific 
+ *      A structure that contains an efficient, driver-specific
  *      representation of pixel data for the player.
  *  - texture_width:
  *      The width of the player texture in pixels.
@@ -32,7 +32,7 @@
  *  - rotation:
  *      The direction the player is facing.
  *  - collision_circumference:
- *      The circumference of the imaginary collision circle 
+ *      The circumference of the imaginary collision circle
  *      around the player.
  */
 typedef struct {
@@ -47,10 +47,10 @@ typedef struct {
 /**
  * Function:
  *  init_player
- * 
+ *
  * Purpose:
  *  Create and initialize a Player object.
- * 
+ *
  * Parameters:
  *  - renderer:
  *      A structure that contains a rendering state.
@@ -58,7 +58,7 @@ typedef struct {
  *      The horizontal starting position of the player.
  *  - y:
  *      The vertical starting position of the player.
- * 
+ *
  * Returns:
  *  Player object if successful, NULL otherwise.
  */
@@ -67,10 +67,10 @@ Player* init_player(SDL_Renderer* renderer, float x, float y);
 /**
  * Function:
  *  update_player
- * 
+ *
  * Purpose:
  *  Update the player based on events.
- * 
+ *
  * Parameters:
  *  - player:
  *      The player object.
@@ -82,7 +82,7 @@ Player* init_player(SDL_Renderer* renderer, float x, float y);
  *      The window's width.
  *  - h:
  *      The window's height.
- * 
+ *
  * Returns:
  *  Nothing.
  */
@@ -91,16 +91,16 @@ void update_player(Player* player, GameEvents* gevts, float dt, int32_t w, int32
 /**
  * Function:
  *  draw_player
- * 
+ *
  * Purpose:
  *  Draw the player. This should always be called after update_player.
- * 
+ *
  * Parameters:
  *  - renderer:
  *      A structure that contains a rendering state.
  *  - player:
  *      The player object.
- * 
+ *
  * Returns:
  *  Nothing.
  */
@@ -112,14 +112,14 @@ void draw_player(SDL_Renderer* renderer, Player* player);
 /**
  * Function:
  *  destroy_player
- * 
+ *
  * Purpose:
  *  Release all resources of the player object.
- * 
+ *
  * Parameters:
  *  - player:
  *      The player object to destroy.
- * 
+ *
  * Returns:
  *  Nothing.
  */

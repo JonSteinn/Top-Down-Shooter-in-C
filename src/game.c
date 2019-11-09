@@ -1,7 +1,7 @@
 #include "game.h"
 
 /**
- * 
+ *
  */
 static void __init_SDL();
 static void __get_screen_resolution(int* w, int* h);
@@ -47,7 +47,7 @@ Game* init_game(int32_t argc, char** args) {
 
 void start_game(Game* game) {
     // GAME LOOP
-    while (game->running) {       
+    while (game->running) {
         update_game_clock(game->gclock);
         __process_events(game);
         __update(game);
@@ -91,7 +91,7 @@ void __process_events(Game* game) {
 
 void __update(Game* game) {
     update_player(game->player, game->gevts, game->gclock->dt, game->width, game->height);
-    update_enemies(game->enemies, game->gclock->dt, &game->player->position, game->width, game->height);
+    update_enemies(game->enemies, game->gclock->dt, &game->player->position);
 }
 
 void __render(Game* game) {
@@ -101,14 +101,14 @@ void __render(Game* game) {
     draw_floor(game->renderer, game->floor, game->width, game->height);
     draw_enemies(game->renderer, game->enemies);
     draw_player(game->renderer, game->player);
-    
+
     SDL_RenderPresent(game->renderer);
 }
 
 void __parse_arguments(Game* game, int32_t argc, char** args, int32_t w, int32_t h) {
 
     for (int32_t i = 1; i <= argc; i++) {
-        if (args[i] && args[i][0] && args[i][1] && args[i][2] 
+        if (args[i] && args[i][0] && args[i][1] && args[i][2]
             && (args[i][0] == 'w' || args[i][0] == 'h') && args[i][1] == '=') {
 
                 int32_t v = string_to_int(args[i]+2);

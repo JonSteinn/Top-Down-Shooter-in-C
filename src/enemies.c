@@ -1,7 +1,7 @@
 #include "enemies.h"
 
 static void __init_enemy(Enemy* enemy, int32_t w, int32_t h);
-static void __update_enemy(Enemy* enemy, float dt, Point2d* p_pos, int32_t w, int32_t h);
+static void __update_enemy(Enemy* enemy, float dt, Point2d* p_pos);
 
 
 Enemies* init_enemies(SDL_Renderer* renderer, int32_t max_enemies, int32_t w, int32_t h) {
@@ -20,22 +20,18 @@ Enemies* init_enemies(SDL_Renderer* renderer, int32_t max_enemies, int32_t w, in
         SDL_FreeSurface(surface);
         free(e->enemies);
         free(e);
-        return NULL;   
+        return NULL;
     }
 
     SDL_FreeSurface(surface);
 
-    // Done with: http://www.spritecow.com/ 
-    SDL_Rect rects[6] = {
-        { 36, 22, 61, 62 },
-        { 114, 23, 60, 62 },
-        { 189, 26, 58, 62 },
-        { 41, 98, 59, 61 },
-        { 112, 99, 60, 61 },
-        { 186, 101, 58, 61 }
-    };
-    memcpy(e->texture_states, rects, sizeof(rects));
-
+    // Done with: http://www.spritecow.com/
+    e->texture_states[0] = (SDL_Rect){ 36, 22, 61, 62 };
+    e->texture_states[1] = (SDL_Rect){ 114, 23, 60, 62 };
+    e->texture_states[2] = (SDL_Rect){ 189, 26, 58, 62 };
+    e->texture_states[3] = (SDL_Rect){ 41, 98, 59, 61 };
+    e->texture_states[4] = (SDL_Rect){ 112, 99, 60, 61 };
+    e->texture_states[5] = (SDL_Rect){ 186, 101, 58, 61 };
     e->max_enemies = max_enemies;
 
     for (int32_t i = 0; i < e->max_enemies; i++) {
@@ -45,9 +41,9 @@ Enemies* init_enemies(SDL_Renderer* renderer, int32_t max_enemies, int32_t w, in
     return e;
 }
 
-void update_enemies(Enemies* enemies, float dt, Point2d* p_pos, int32_t w, int32_t h) {
+void update_enemies(Enemies* enemies, float dt, Point2d* p_pos) {
     for (int32_t i = 0; i < enemies->max_enemies; i++) {
-        __update_enemy(enemies->enemies + i, dt, p_pos, w, h);
+        __update_enemy(enemies->enemies + i, dt, p_pos);
     }
 }
 
@@ -55,7 +51,7 @@ void draw_enemies(SDL_Renderer* renderer, Enemies* enemies) {
     for (int32_t i = 0; i < enemies->max_enemies; i++) {
         Enemy e = enemies->enemies[i];
         SDL_Rect rect = { e.position.x, e.position.y,  50, 50 } ;
-        SDL_RenderCopyEx(renderer, enemies->texture, &enemies->texture_states[e.state], &rect, e.rotation, NULL, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, enemies->texture, &enemies->texture_states[(int)e.state], &rect, e.rotation, NULL, SDL_FLIP_NONE);
     }
 }
 
@@ -65,8 +61,6 @@ void destroy_enemies(Enemies* enemies) {
 }
 
 void __init_enemy(Enemy* enemy, int32_t w, int32_t h) {
-    enemy->health = 2;
-
     if (rand() % 2) {
         enemy->position.x = (rand() % (w+1000) - 500);
         if (enemy->position.x >= -50 && enemy->position.x <= w + 50) {
@@ -82,17 +76,15 @@ void __init_enemy(Enemy* enemy, int32_t w, int32_t h) {
             enemy->position.x = (rand() % (w+1000) - 500);
         }
     }
-    
+
     enemy->rotation = 90;
-    enemy->state = 0;
-    enemy->statef = 0.0f;
+    enemy->state = 0.0f;
 }
 
 
-void __update_enemy(Enemy* enemy, float dt, Point2d* p_pos, int32_t w, int32_t h) {
-    enemy->statef += dt * 0.01f;
-    if (enemy->statef >= 6.0f) enemy->statef -= (int)enemy->statef;
-    enemy->state = (int)(enemy->statef);
+void __update_enemy(Enemy* enemy, float dt, Point2d* p_pos) {
+    enemy->state += dt * 0.01f;
+    if (enemy->state >= 6.0f) enemy->state -= (float)((int)enemy->state);
 
     float dx = p_pos->x - enemy->position.x;
     float dy = p_pos->y - enemy->position.y;
@@ -102,10 +94,4 @@ void __update_enemy(Enemy* enemy, float dt, Point2d* p_pos, int32_t w, int32_t h
     enemy->position.y += dy * norm_factor * dt * 0.05f;
 
     enemy->rotation = sign(-dx) * rad_to_deg(fast_acos(dy * norm_factor)) + 180;
-
-    // Loss of life happens here... 
-
-    if (enemy->health == 0) {
-        __init_enemy(enemy, w, h);
-    }
 }
