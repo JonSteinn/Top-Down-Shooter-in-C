@@ -20,20 +20,23 @@ static const uint32_t FREE_FLOOR = 1u<<10;
 static const char INIT_SDL_LOG[] = "Unable to initialize SDL: %s";
 static const char OPEN_AUDIO_LOG[] = "Unable to initialize SDL audio: %s";
 static const char DISPLAY_MODE_LOG[] = "Getting screen resolution failed: %s";
+static const char CREATE_WIN_LOG[] = "Could not create window: %s\n";
+static const char CREATE_RENDERER_LOG[] = "Could not create renderer: %s\n";
 static const char TITLE[] = "Top dow shooter in C";
 static const int32_t DEFAULT_WIDTH = 800;
 static const int32_t DEFAULT_HEIGHT = 600;
 static const int32_t DEFAULT_ENEMY_COUNT = 10;
+static const int32_t MIN_ENEMY_COUNT = 1;
+static const int32_t MAX_ENEMY_COUNT = 1000;
 static const int32_t AUDIO_CHANNELS = 2;
 static const int32_t AUDIO_CHUNK_SIZE = 1<<12;
+static const int32_t MIN_WINDOW_DIM = 400;
 
 static void __init_SDL(void);
 static void __destroy(Game* game, uint32_t mask);
 static void __get_screen_resolution(int* w, int* h);
 static Game* __alloc_and_set_game(void);
-static void __parse_arguments(Game* game, int32_t argc, char** args, int32_t w, int32_t h);
-
-
+static void __parse_arguments(Game* game, int32_t argc, char** args, int32_t w, int32_t h, int32_t* z);
 static void __init_window(Game* game, int32_t w, int32_t h);
 static void __init_renderer(Game* game);
 static void __init_sound(Game* game);
@@ -64,17 +67,17 @@ Game* init_game(int32_t argc, char** argv) {
 
     __init_SDL();
 
-    int32_t w, h;
+    int32_t w, h, z = DEFAULT_ENEMY_COUNT;
     __get_screen_resolution(&w, &h);
 
     Game* game = __alloc_and_set_game();
 
-    __parse_arguments(game, argc, argv, w, h);
+    __parse_arguments(game, argc, argv, w, h, &z);
     __init_window(game, w, h);
     __init_renderer(game);
     __init_sound(game);
     __init_player(game, game->width / 2.0f, game->height / 2.0f);
-    __init_enemies(game, DEFAULT_ENEMY_COUNT);
+    __init_enemies(game, z);
     __init_floor(game);
 
     game->gevts = init_game_events();
@@ -141,8 +144,8 @@ static void __destroy(Game* game, uint32_t mask) {
     if (FREE_CLOCK & mask) destroy_game_clock(game->gclock);
     if (FREE_EVENTS & mask) destroy_game_events(game->gevts);
     if (FREE_SOUND & mask) destroy_sound(game->sound);
-    if (FREE_SDL_AUDIO & mask) Mix_CloseAudio();
     if (FREE_MEMORY & mask) free(game);
+    if (FREE_SDL_AUDIO & mask) Mix_CloseAudio();
     if (FREE_SDL & mask) SDL_Quit();
 }
 
@@ -172,17 +175,21 @@ static Game* __alloc_and_set_game(void) {
 }
 
 
-static void __parse_arguments(Game* game, int32_t argc, char** argv, int32_t w, int32_t h) {
+static void __parse_arguments(Game* game, int32_t argc, char** argv, int32_t w, int32_t h, int32_t* z) {
     int32_t opt, v;
-    while ((opt = getopt(argc, argv, "w:h:")) != -1) {
+    while ((opt = getopt(argc, argv, "w:h:z:")) != -1) {
         switch (opt) {
             case 'w':
                 v = string_to_int(optarg);
-                game->width = v < 400 ? 400 : v;
+                game->width = v < MIN_WINDOW_DIM ? MIN_WINDOW_DIM : v;
                 break;
             case 'h':
                 v = string_to_int(optarg);
-                game->height = v < 400 ? 400 : v;
+                game->height = v < MIN_WINDOW_DIM ? MIN_WINDOW_DIM : v;
+                break;
+            case 'z':
+                v = string_to_int(optarg);
+                if (MIN_ENEMY_COUNT <= v && v <= MAX_ENEMY_COUNT) *z = v;
                 break;
             default:
                 break;
@@ -197,19 +204,71 @@ static void __parse_arguments(Game* game, int32_t argc, char** argv, int32_t w, 
 
 
 
+static void __init_window(Game* game, int32_t w, int32_t h) {
+    bool full_screen = game->width == w || game->height == h;
 
+    Uint32 flags = SDL_WINDOW_OPENGL;
+    if (full_screen) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
+    game->window = SDL_CreateWindow(
+        TITLE,                      // window title
+        SDL_WINDOWPOS_UNDEFINED,    // initial x position
+        SDL_WINDOWPOS_UNDEFINED,    // initial y position
+        game->width,                // width, in pixels
+        game->height,               // height, in pixels
+        flags                       // flags
+    );
 
+    if (game->window == NULL) {
+        SDL_Log(CREATE_WIN_LOG, SDL_GetError());
+        __destroy(game, FREE_MEMORY | FREE_SDL | FREE_SDL_AUDIO);
+        exit(EXIT_FAILURE);
+    }
+}
 
+static void __init_renderer(Game* game) {
+    game->renderer = SDL_CreateRenderer(game->window, -1, SDL_RENDERER_ACCELERATED);
+    if (game->renderer == NULL) {
+        SDL_Log(CREATE_RENDERER_LOG, SDL_GetError());
+        __destroy(game, FREE_MEMORY | FREE_SDL | FREE_SDL_AUDIO | FREE_WINDOW);
+        exit(EXIT_FAILURE);
+    }
+}
 
+static void __init_sound(Game* game) {
+    game->sound = init_sound();
+    if (game->sound == NULL) {
+        __destroy(game, FREE_MEMORY | FREE_SDL | FREE_SDL_AUDIO | FREE_WINDOW | FREE_RENDERER);
+        exit(EXIT_FAILURE);
+    }
+}
 
+static void __init_player(Game* game, float x, float y) {
+    game->player = init_player(game->renderer, x, y);
+    if (game->player == NULL) {
+        __destroy(game, FREE_MEMORY | FREE_SDL | FREE_SDL_AUDIO |
+            FREE_WINDOW | FREE_RENDERER | FREE_SOUND);
+        exit(EXIT_FAILURE);
+    }
+}
 
+static void __init_enemies(Game* game, int32_t count) {
+    game->enemies = init_enemies(game->renderer, count, game->width, game->height);
+    if (game->enemies == NULL) {
+        __destroy(game, FREE_MEMORY | FREE_SDL | FREE_SDL_AUDIO |
+            FREE_WINDOW | FREE_RENDERER | FREE_SOUND | FREE_PLAYER);
+        exit(EXIT_FAILURE);
+    }
+}
 
-
-
-
-
-
+static void __init_floor(Game* game) {
+    game->floor = init_floor(game->renderer);
+    if (game->floor == NULL) {
+        __destroy(game, FREE_MEMORY | FREE_SDL | FREE_SDL_AUDIO | FREE_WINDOW |
+            FREE_RENDERER | FREE_SOUND | FREE_PLAYER | FREE_ENEMIES);
+        exit(EXIT_FAILURE);
+    }
+}
 
 static void __process_events(Game* game) {
     process_events(game->gevts);
@@ -230,92 +289,4 @@ static void __render(Game* game) {
     draw_player(game->renderer, game->player);
 
     SDL_RenderPresent(game->renderer);
-}
-
-
-
-
-
-static void __init_window(Game* game, int32_t w, int32_t h) {
-    bool full_screen = game->width == w || game->height == h;
-    Uint32 flags = SDL_WINDOW_OPENGL;
-    if (full_screen) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    game->window = SDL_CreateWindow(
-        TITLE,                      // window title
-        SDL_WINDOWPOS_UNDEFINED,    // initial x position
-        SDL_WINDOWPOS_UNDEFINED,    // initial y position
-        game->width,                // width, in pixels
-        game->height,               // height, in pixels
-        flags                       // flags
-    );
-    if (game->window == NULL) {
-        SDL_Log("Could not create window: %s\n", SDL_GetError());
-        free(game);
-        Mix_CloseAudio();
-        SDL_Quit();
-        exit(EXIT_FAILURE);
-    }
-}
-
-static void __init_renderer(Game* game) {
-    game->renderer = SDL_CreateRenderer(game->window, -1, SDL_RENDERER_ACCELERATED);
-    if (game->renderer == NULL) {
-        SDL_Log("Could not create renderer: %s\n", SDL_GetError());
-        SDL_DestroyWindow(game->window);
-        Mix_CloseAudio();
-        SDL_Quit();
-        free(game);
-        exit(EXIT_FAILURE);
-    }
-}
-
-static void __init_sound(Game* game) {
-    game->sound = init_sound();
-    if (game->sound == NULL) {
-        SDL_DestroyRenderer(game->renderer);
-        SDL_DestroyWindow(game->window);
-        Mix_CloseAudio();
-        SDL_Quit();
-        free(game);
-        exit(EXIT_FAILURE);
-    }
-}
-
-static void __init_player(Game* game, float x, float y) {
-    game->player = init_player(game->renderer, x, y);
-    if (game->player == NULL) {
-        SDL_DestroyRenderer(game->renderer);
-        SDL_DestroyWindow(game->window);
-        Mix_CloseAudio();
-        SDL_Quit();
-        free(game);
-        exit(EXIT_FAILURE);
-    }
-}
-
-static void __init_enemies(Game* game, int32_t count) {
-    game->enemies = init_enemies(game->renderer, count, game->width, game->height);
-    if (game->enemies == NULL) {
-        SDL_DestroyRenderer(game->renderer);
-        SDL_DestroyWindow(game->window);
-        Mix_CloseAudio();
-        SDL_Quit();
-        destroy_player(game->player);
-        free(game);
-        exit(EXIT_FAILURE);
-    }
-}
-
-static void __init_floor(Game* game) {
-    game->floor = init_floor(game->renderer);
-    if (game->floor == NULL) {
-        destroy_player(game->player);
-        destroy_enemies(game->enemies);
-        SDL_DestroyRenderer(game->renderer);
-        SDL_DestroyWindow(game->window);
-        Mix_CloseAudio();
-        SDL_Quit();
-        free(game);
-        exit(EXIT_FAILURE);
-    }
 }
