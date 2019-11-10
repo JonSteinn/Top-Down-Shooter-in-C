@@ -9,11 +9,17 @@ static const uint32_t FREE_ALL = 0xFFFFFFFFu;
 static const uint32_t FREE_MUSIC = 1u<<0;
 // Free Sound object
 static const uint32_t FREE_MEMORY = 1u<<1;
+// Free SDL sound chuncks
+static const uint32_t FREE_CHUNKS = 1u<<2;
 
 // Path to music file
 static const char MUSIC_PATH[] = "assets/sounds/music/music.mp3";
+// Path to shoot file
+static const char SHOOT_PATH[] = "assets/sounds/effects/shoot.mp3";
 // Error message when music file is not found
 static const char LOAD_MUSIC_LOG[] = "Did not find music asset: %s";
+// Error message when gun sound file is not found
+static const char LOAD_SHOOT_LOG[] = "Did not find shoot sound asset: %s";
 // Error message when playing music fails
 static const char PLAY_MUSIC_LOG[] = "Can't play music: %s";
 
@@ -32,6 +38,22 @@ static const char PLAY_MUSIC_LOG[] = "Can't play music: %s";
  *  true if successful, false otherwise.
  */
 static bool __load_music(Sound* sound);
+
+/**
+ * Function:
+ *  __load_chunks
+ *
+ * Purpose:
+ *  Load the sound effects files.
+ *
+ * Parameters:
+ *  - sound:
+ *      A Sound object that stores the sound effect data.
+ *
+ * Returns:
+ *  true if successful, false otherwise.
+ */
+static bool __load_chunks(Sound* sound);
 
 /**
  * Function:
@@ -64,6 +86,7 @@ static bool __play_music(Sound* sound);
  *      FREE_ALL
  *      FREE_MUSIC
  *      FREE_MEMORY
+ *      FREE_CHUNKS
  *
  * Returns:
  *  Nothing.
@@ -80,6 +103,9 @@ Sound* init_sound(void) {
 
     // Load music
     if (!__load_music(s)) return NULL;
+
+    // Load sound effects
+    if (!__load_chunks(s)) return NULL;
 
     // Play music
     if (!__play_music(s)) return NULL;
@@ -112,6 +138,23 @@ static bool __load_music(Sound* sound) {
 }
 
 /**
+ * Release memory of sound and music [no pun intended] if
+ * we fail to load chunks.
+ */
+static bool __load_chunks(Sound* sound) {
+    sound->shoot = Mix_LoadWAV(SHOOT_PATH);
+
+    // If fails
+    if (sound->shoot == NULL) {
+        SDL_Log(LOAD_SHOOT_LOG, SDL_GetError());
+
+        return false;
+    }
+
+    return true;
+}
+
+/**
  * Releases resources of sound and loaded music
  * if fails to play music.
  */
@@ -119,7 +162,7 @@ static bool __play_music(Sound* sound) {
     // If fails
     if (Mix_PlayMusic(sound->music, -1) == -1) {
         SDL_Log(PLAY_MUSIC_LOG, SDL_GetError());
-        __destroy(sound, FREE_MUSIC | FREE_MEMORY);
+        __destroy(sound, FREE_MUSIC | FREE_MEMORY | FREE_CHUNKS);
         return false;
     }
 
@@ -131,5 +174,6 @@ static bool __play_music(Sound* sound) {
  */
 static void __destroy(Sound* sound, uint32_t mask) {
     if (mask & FREE_MUSIC) Mix_FreeMusic(sound->music);
+    if (mask & FREE_CHUNKS) Mix_FreeChunk(sound->shoot);
     if (mask & FREE_MEMORY) free(sound);
 }

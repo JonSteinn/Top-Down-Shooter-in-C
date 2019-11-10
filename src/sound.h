@@ -19,9 +19,12 @@
  * Fields:
  *  - music:
  *      This is an opaque data type used for Music data.
+ *  - shoot:
+ *      The internal format for an audio chunk.
  */
 typedef struct {
     Mix_Music* music;
+    Mix_Chunk* shoot;
 } Sound;
 
 /**
