@@ -1,8 +1,10 @@
 #include "game.h"
 
-/**
- *
- */
+static const char TITLE[] = "Top dow shooter in C";
+static const int32_t DEFAULT_WIDTH = 800;
+static const int32_t DEFAULT_HEIGHT = 600;
+static const int32_t DEFAULT_ENEMY_COUNT = 10;
+
 static void __init_SDL();
 static void __get_screen_resolution(int* w, int* h);
 static void __parse_arguments(Game* game, int32_t argc, char** args, int32_t w, int32_t h);
@@ -26,8 +28,8 @@ Game* init_game(int32_t argc, char** args) {
 
     Game* game = (Game*)malloc(sizeof(Game));
     game->running = true;
-    game->width = 800;
-    game->height = 600;
+    game->width = DEFAULT_WIDTH;
+    game->height = DEFAULT_HEIGHT;
 
     __parse_arguments(game, argc, args, w, h);
 
@@ -35,7 +37,7 @@ Game* init_game(int32_t argc, char** args) {
     __init_renderer(game);
     __init_sound(game);
     __init_player(game, game->width / 2.0f, game->height / 2.0f);
-    __init_enemies(game, 1);
+    __init_enemies(game, DEFAULT_ENEMY_COUNT);
     __init_floor(game);
 
 
@@ -87,7 +89,6 @@ void __process_events(Game* game) {
     process_events(game->gevts);
     game->running = !game->gevts->quit;
 }
-
 
 void __update(Game* game) {
     update_player(game->player, game->gevts, game->gclock->dt, game->width, game->height);
@@ -141,7 +142,7 @@ void __init_window(Game* game, int32_t w, int32_t h) {
     Uint32 flags = SDL_WINDOW_OPENGL;
     if (full_screen) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     game->window = SDL_CreateWindow(
-        "Top dow shooter in C",     // window title
+        TITLE,                      // window title
         SDL_WINDOWPOS_UNDEFINED,    // initial x position
         SDL_WINDOWPOS_UNDEFINED,    // initial y position
         game->width,                // width, in pixels
@@ -219,11 +220,3 @@ void __init_floor(Game* game) {
         exit(EXIT_FAILURE);
     }
 }
-
-/*
-TODO:
-
-Create a better clean up system for fails...
-
-bitmask options ... or something..
-*/

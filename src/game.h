@@ -5,7 +5,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <time.h>
+
 #include <SDL2/SDL.h>
+
 #include "gclock.h"
 #include "gevent.h"
 #include "player.h"
@@ -14,18 +17,17 @@
 #include "floor.h"
 #include "sound.h"
 #include "enemies.h"
-#include <time.h>
 
 /**
  * Struct:
  *  Game
- * 
+ *
  * Purpose:
  *  The main game object that keeps hold of all resources.
- * 
+ *
  * Fields:
  *  - width
- *      The window's width 
+ *      The window's width
  *  height
  *      The window's height
  *  window
