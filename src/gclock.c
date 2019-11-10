@@ -5,7 +5,7 @@
  * except for GameClock::now, which is set to the current value
  * of the high resolution counter.
  */
-GameClock* init_game_clock() {
+GameClock* init_game_clock(void) {
     GameClock* c = (GameClock*)malloc(sizeof(GameClock));
 
     c->now = SDL_GetPerformanceCounter();

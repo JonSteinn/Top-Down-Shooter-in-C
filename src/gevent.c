@@ -3,14 +3,14 @@
 /**
  * Function:
  *  __set_to_default
- * 
+ *
  * Purpose:
  *  Sets all boolean fields to false.
- * 
+ *
  * Parameters:
  *  - gevts:
  *      The GameEvents object.
- * 
+ *
  * Returns:
  *  Nothing.
  */
@@ -19,15 +19,15 @@ static void __set_to_default(GameEvents* gevts);
 /**
  * Function:
  *  __poll_events
- * 
+ *
  * Purpose:
- *  Polls for currently pending events and maps them to our 
+ *  Polls for currently pending events and maps them to our
  *  GameEvents state.
- * 
+ *
  * Parameters:
  *  - gevts:
  *      The GameEvents object.
- * 
+ *
  * Returns:
  *  Nothing.
  */
@@ -36,25 +36,25 @@ static void __poll_events(GameEvents* gevts);
 /**
  * Function:
  *  __keyboard_state
- * 
+ *
  * Purpose:
  *  Maps keyboard state to our GameEvents state.
- * 
+ *
  * Parameters:
  *  - gevts:
  *      The GameEvents object.
- * 
+ *
  * Returns:
  *  Nothing.
  */
 static void __keyboard_state(GameEvents* gevts);
 
 /**
- * Allocate memory for the game event. Only really need 
+ * Allocate memory for the game event. Only really need
  * to set gevts->quit to its default value but still
  * use the __set_to_default function.
  */
-GameEvents* init_game_events() {
+GameEvents* init_game_events(void) {
     GameEvents* gevts = (GameEvents*)malloc(sizeof(GameEvents));
     __set_to_default(gevts);
     return gevts;

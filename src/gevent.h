@@ -10,10 +10,10 @@
 /**
  * Struct:
  *  GameEvents
- * 
+ *
  * Purpose:
  *  A game specific mapping of input events.
- * 
+ *
  * Fields
  *  - quit:
  *      Did the player press ESC or close window?
@@ -46,29 +46,29 @@ typedef struct {
 /**
  * Function:
  *  init_game_events
- * 
+ *
  * Purpose:
  *  Create and intialize GameEvents object.
- * 
+ *
  * Parameters:
  *  None.
- * 
+ *
  * Returns:
  *  A GameEvents object.
  */
-GameEvents* init_game_events();
+GameEvents* init_game_events(void);
 
 /**
  * Function:
  *  process_events
- * 
+ *
  * Purpose:
  *  Check which events happened during this frame.
- * 
+ *
  * Parameters:
  *  - gevts:
  *      The GameEvents object to process.
- * 
+ *
  * Returns:
  *  Nothing.
  */
@@ -77,14 +77,14 @@ void process_events(GameEvents* gevts);
 /**
  * Function:
  *  destroy_game_events
- * 
+ *
  * Purpose:
  *  Free resources for the GameEvents object.
- * 
+ *
  * Parameters:
  *  - gevts:
  *      The GameEvents object to destroy.
- * 
+ *
  * Returns:
  *  Nothing.
  */

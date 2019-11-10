@@ -12,10 +12,10 @@
 /**
  * Struct:
  *  Sound
- * 
+ *
  * Purpose:
  *  Holds on to any sound resources needed by the game.
- * 
+ *
  * Fields:
  *  - music:
  *      This is an opaque data type used for Music data.
@@ -27,29 +27,29 @@ typedef struct {
 /**
  * Function:
  *  init_sound
- * 
+ *
  * Purpose:
  *  Create and initialize a Sound object.
- * 
+ *
  * Parameters:
  *  None.
- * 
+ *
  * Returns:
  *  Sound object if successful, NULL otherwise.
  */
-Sound* init_sound();
+Sound* init_sound(void);
 
 /**
  * Function:
  *  destroy_sound
- * 
+ *
  * Purpose:
  *  Release all resources of a Sound object.
- * 
+ *
  * Parameters:
  *  - sound:
  *      The Sound object to destroy.
- * 
+ *
  * Returns:
  *  Nothing.
  */

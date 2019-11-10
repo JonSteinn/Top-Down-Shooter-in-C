@@ -20,14 +20,14 @@ static const char PLAY_MUSIC_LOG[] = "Can't play music: %s";
 /**
  * Function:
  *  __load_music
- * 
+ *
  * Purpose:
  *  Load the music file.
- * 
+ *
  * Parameters:
  *  - sound:
  *      A Sound object that stores the music data.
- * 
+ *
  * Returns:
  *  true if successful, false otherwise.
  */
@@ -36,14 +36,14 @@ static bool __load_music(Sound* sound);
 /**
  * Function:
  *  __play_music
- * 
+ *
  * Purpose:
  *  Starts playing the music in an infinite loop.
- * 
+ *
  * Parameters:
  *  - sound:
  *      A Sound object that stores the music data.
- * 
+ *
  * Returns:
  *  true if successful, false otherwise.
  */
@@ -52,10 +52,10 @@ static bool __play_music(Sound* sound);
 /**
  * Function:
  *  __destroy
- * 
+ *
  * Purpose:
  *  Release resources of the Sound object.
- * 
+ *
  * Parameters:
  *  - sound:
  *      The Sound object to destroy
@@ -64,7 +64,7 @@ static bool __play_music(Sound* sound);
  *      FREE_ALL
  *      FREE_MUSIC
  *      FREE_MEMORY
- * 
+ *
  * Returns:
  *  Nothing.
  */
@@ -74,7 +74,7 @@ static void __destroy(Sound* sound, uint32_t mask);
  * If the function fails midway, make sure any
  * previously allocated resources are released.
  */
-Sound* init_sound() {
+Sound* init_sound(void) {
     // Allocate memory
     Sound* s = (Sound*)malloc(sizeof(Sound));
 
