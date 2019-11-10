@@ -23,6 +23,22 @@ make -C src
 ./src/main.exe
 ```
 
+## Flags
+```sh
+# Set screen width [min is 400, max is 0.9*ScreenRes]
+./src/main.exe -w 800
+
+# Set screen height [min is 400, max is 0.9*ScreenRes]
+./src/main.exe -h 600
+
+# Set number of enemies [min is 1, max is 1000]
+./src/main.exe -z 100
+
+# Example: 400 enemies in a 450x999 window
+./src/main.exe -z 400 -w 450 -h 999
+```
+
+
 ## TODO:
 5. Collision enemy+player
 6. Data structure for bullets (pre-allocated hashset?)
