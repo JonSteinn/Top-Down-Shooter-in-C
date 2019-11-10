@@ -111,11 +111,15 @@ void update_enemies(Enemies* enemies, float dt, Point2d* p_pos);
  *      A structure that contains a rendering state.
  *  - enemies:
  *      The Enemies object to draw.
+ *  - w:
+ *      The window's width.
+ *  - h:
+ *      The window's height.
  *
  * Returns:
  *  Nothing.
  */
-void draw_enemies(SDL_Renderer* renderer, Enemies* enemies);
+void draw_enemies(SDL_Renderer* renderer, Enemies* enemies, int32_t w, int32_t h);
 
 /**
  * Function:

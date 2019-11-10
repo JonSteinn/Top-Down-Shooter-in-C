@@ -20,6 +20,8 @@ static const char CREATE_TEXTURE_LOG[] = "Could not create texture from surface:
 static const float ENEMY_ANIMATION_SPEED = 0.01f;
 // How fast the enemy walks
 static const float ENEMY_WALKING_SPEED = 0.05f;
+// Enemy size
+static const int32_t ENEMY_SIZE = 50;
 
 /**
  * Function:
@@ -222,11 +224,15 @@ void update_enemies(Enemies* enemies, float dt, Point2d* p_pos) {
 }
 
 /**
- * Calls draw for each enemy.
+ * Calls draw for each enemy, given they are visible.
  */
-void draw_enemies(SDL_Renderer* renderer, Enemies* enemies) {
+void draw_enemies(SDL_Renderer* renderer, Enemies* enemies, int32_t w, int32_t h) {
     for (int32_t i = 0; i < enemies->max_enemies; i++) {
-        __draw_enemy(renderer, enemies, i);
+        bool visible = enemies->enemies[i].position.x > -ENEMY_SIZE
+            && enemies->enemies[i].position.x < w + ENEMY_SIZE
+            && enemies->enemies[i].position.y > -ENEMY_SIZE
+            && enemies->enemies[i].position.y < h + ENEMY_SIZE;
+        if (visible) __draw_enemy(renderer, enemies, i);
     }
 }
 
@@ -309,7 +315,7 @@ static void __pick_x_first(Enemy* enemy, int32_t w, int32_t h) {
     enemy->position.x = (rand() % (w+1000) - 500);
 
     // If x is within the window boundary (with a little leeway)
-    if (enemy->position.x >= -50 && enemy->position.x <= w + 50) {
+    if (enemy->position.x >= -ENEMY_SIZE && enemy->position.x <= w + ENEMY_SIZE) {
         // Pick y to be outside the window boundary
         enemy->position.y = rand() % 2 ? -(100 + (rand() % 500)) : h + (100 + (rand() % 500));
     } else {
@@ -328,7 +334,7 @@ static void __pick_y_first(Enemy* enemy, int32_t w, int32_t h) {
     enemy->position.y = (rand() % (h+1000) - 500);
 
     // If y is within the window boundary (with a little leeway)
-    if (enemy->position.y >= -50 && enemy->position.y <= h + 50) {
+    if (enemy->position.y >= -ENEMY_SIZE && enemy->position.y <= h + ENEMY_SIZE) {
         // Pick x to be outside the window boundary
         enemy->position.x = rand() % 2 ? -(100 + (rand() % 500)) : w + (100 + (rand() % 500));
     } else {
@@ -364,7 +370,7 @@ static void __update_enemy(Enemy* enemy, float dt, Point2d* p_pos) {
  */
 static void __draw_enemy(SDL_Renderer* renderer, Enemies* enemies, int32_t enemy_index) {
     Enemy e = enemies->enemies[enemy_index];
-    SDL_Rect rect = { e.position.x, e.position.y,  50, 50 } ;
+    SDL_Rect rect = { e.position.x, e.position.y,  ENEMY_SIZE, ENEMY_SIZE } ;
     SDL_RenderCopyEx(
         renderer,
         enemies->texture,
