@@ -16,16 +16,25 @@ static const char SPRITE_PATH[] = "assets/sprites/enemy.png";
 static const char LOAD_IMG_LOG[] = "Enemy sprite not found: %s\n";
 // Error message when fails to create surface
 static const char CREATE_TEXTURE_LOG[] = "Could not create texture from surface: %s\n";
+// How fast the enemy animates
+static const float ENEMY_ANIMATION_SPEED = 0.01f;
+// How fast the enemy walks
+static const float ENEMY_WALKING_SPEED = 0.05f;
 
 /**
  * Function:
  *  __alloc_and_set_enemies
  *
  * Purpose:
+ *  Allocate memory for the Enemies object and initialize
+ *  some of its values.
  *
  * Parameters:
+ *  max_enemies:
+ *      How large the array of enemies should be.
  *
  * Returns:
+ *  The Enemies object allocated.
  */
 static Enemies* __alloc_and_set_enemies(int32_t max_enemies);
 
@@ -34,10 +43,18 @@ static Enemies* __alloc_and_set_enemies(int32_t max_enemies);
  *  __create_texture
  *
  * Purpose:
+ *  Create a texture from an existing surface.
  *
  * Parameters:
+ *  - renderer:
+ *      A structure that contains a rendering state.
+ *  - surface:
+ *      A structure that contains a collection of pixels used in software blitting.
+ *  - enemies:
+ *      The Enemies object.
  *
  * Returns:
+ *  true if successful, false otherwise.
  */
 static bool __create_texture(SDL_Renderer* renderer, SDL_Surface* surface, Enemies* enemies);
 
@@ -46,21 +63,39 @@ static bool __create_texture(SDL_Renderer* renderer, SDL_Surface* surface, Enemi
  *  __destroy
  *
  * Purpose:
+ *  Release resources of the Enemies object.
  *
  * Parameters:
+ *  - enemies:
+ *      The Enemies object.
+ *  - surface:
+ *      SDL_Surface that only lives in function scopes.
+ *  - mask:
+ *      A mask to choose which resources are destroyed.
+ *      FREE_SURFACE
+ *      FREE_MEMORY
+ *      FREE_TEXTURE
+ *      FREE_TEXTURE
  *
  * Returns:
  *  Nothing.
  */
-static void __destroy(Enemies* player, SDL_Surface* surface, uint32_t mask);
+static void __destroy(Enemies* enemies, SDL_Surface* surface, uint32_t mask);
 
 /**
  * Function:
  *  __init_enemy
  *
  * Purpose:
+ *  Initialize the enemy's position.
  *
  * Parameters:
+ *  - enemy:
+ *      The Enemy object.
+ *  - w:
+ *      The width of the window.
+ *  - h:
+ *      The height of the window.
  *
  * Returns:
  *  Nothing.
@@ -72,8 +107,16 @@ static void __init_enemy(Enemy* enemy, int32_t w, int32_t h);
  *  __pick_x_first
  *
  * Purpose:
+ *  Choose x-coordinate for enemy randomly first, then y based
+ *  on the choice of x so they spawn outside the window.
  *
  * Parameters:
+ *  - enemy:
+ *      The Enemy object.
+ *  - w:
+ *      The width of the window.
+ *  - h:
+ *      The height of the window.
  *
  * Returns:
  *  Nothing.
@@ -85,8 +128,16 @@ static void __pick_x_first(Enemy* enemy, int32_t w, int32_t h);
  *  __pick_y_first
  *
  * Purpose:
+ *  Choose y-coordinate for enemy randomly first, then x based
+ *  on the choice of y so they spawn outside the window.
  *
  * Parameters:
+ *  - enemy:
+ *      The Enemy object.
+ *  - w:
+ *      The width of the window.
+ *  - h:
+ *      The height of the window.
  *
  * Returns:
  *  Nothing.
@@ -98,8 +149,16 @@ static void __pick_y_first(Enemy* enemy, int32_t w, int32_t h);
  *  __update_enemy
  *
  * Purpose:
+ *  Update enemy's animation, position and rotation base
+ *  on time and player position.
  *
  * Parameters:
+ *  - enemy:
+ *      The Enemy object.
+ *  - dt:
+ *      Delta time.
+ *  - p_pos:
+ *      The position of the player.
  *
  * Returns:
  *  Nothing.
@@ -111,8 +170,15 @@ static void __update_enemy(Enemy* enemy, float dt, Point2d* p_pos);
  *  __draw_enemy
  *
  * Purpose:
+ *  Draw the enemy in his current animation state.
  *
  * Parameters:
+ *  - renderer:
+ *      A structure that contains a rendering state.
+ *  - enemies:
+ *      The Enemies object.
+ *  - enemy_index:
+ *      The index of the enemy to update in the enemy array.
  *
  * Returns:
  *  Nothing.
@@ -173,7 +239,9 @@ void destroy_enemies(Enemies* enemies) {
 }
 
 /**
- *
+ * Allocate memory for Enemies and its Enemy array. Set the
+ * texture states array to the rectangles surrounding each
+ * image within the sprite sheet.
  */
 static Enemies* __alloc_and_set_enemies(int32_t max_enemies) {
     Enemies* e = (Enemies*)malloc(sizeof(Enemies));
@@ -193,7 +261,8 @@ static Enemies* __alloc_and_set_enemies(int32_t max_enemies) {
 }
 
 /**
- *
+ * Releases the surface resources and Enemies memory if we fail
+ * to create the texture.
  */
 static bool __create_texture(SDL_Renderer* renderer, SDL_Surface* surface, Enemies* enemies) {
     enemies->texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -206,7 +275,7 @@ static bool __create_texture(SDL_Renderer* renderer, SDL_Surface* surface, Enemi
 }
 
 /**
- *
+ * Check each resources against mask before releasing.
  */
 static void __destroy(Enemies* enemies, SDL_Surface* surface, uint32_t mask) {
     if (FREE_SURFACE & mask) SDL_FreeSurface(surface);
@@ -218,7 +287,8 @@ static void __destroy(Enemies* enemies, SDL_Surface* surface, uint32_t mask) {
 }
 
 /**
- *
+ * Initialize an enemy to a random position within the world,
+ * outside the view of the player but not too far off.
  */
 static void __init_enemy(Enemy* enemy, int32_t w, int32_t h) {
     if (rand() % 2) {
@@ -230,41 +300,56 @@ static void __init_enemy(Enemy* enemy, int32_t w, int32_t h) {
 }
 
 /**
- *
+ * Choose horizontal position of enemy first and then the
+ * vertical position based on that, so they always spawn
+ * outside the window.
  */
 static void __pick_x_first(Enemy* enemy, int32_t w, int32_t h) {
+    // Pick x uniform from [-500,w+500]
     enemy->position.x = (rand() % (w+1000) - 500);
+
+    // If x is within the window boundary (with a little leeway)
     if (enemy->position.x >= -50 && enemy->position.x <= w + 50) {
+        // Pick y to be outside the window boundary
         enemy->position.y = rand() % 2 ? -(100 + (rand() % 500)) : h + (100 + (rand() % 500));
     } else {
+        // Pick y uniformly from [-500,h+500]
         enemy->position.y = (rand() % (h+1000) - 500);
     }
 }
 
 /**
- *
+ * Choose vertical position of enemy first and then the
+ * horizontal position based on that, so they always spawn
+ * outside the window.
  */
 static void __pick_y_first(Enemy* enemy, int32_t w, int32_t h) {
+    // Pick y uniformly from [-500,h+500]
     enemy->position.y = (rand() % (h+1000) - 500);
+
+    // If y is within the window boundary (with a little leeway)
     if (enemy->position.y >= -50 && enemy->position.y <= h + 50) {
+        // Pick x to be outside the window boundary
         enemy->position.x = rand() % 2 ? -(100 + (rand() % 500)) : w + (100 + (rand() % 500));
     } else {
+        // Pick y uniformly from [-500,h+500]
         enemy->position.x = (rand() % (w+1000) - 500);
     }
 }
 
 /**
- *
+ * Update animation state and move the enemy a little closer to the player,
+ * also rotate the texture to be facing the player.
  */
 static void __update_enemy(Enemy* enemy, float dt, Point2d* p_pos) {
     // Animate
-    enemy->state += dt * 0.01f;
+    enemy->state += dt * ENEMY_ANIMATION_SPEED;
     if (enemy->state >= 6.0f) enemy->state -= (float)((int)enemy->state);
 
     // Math
     Vector2d e_to_p = {p_pos->x - enemy->position.x, p_pos->y - enemy->position.y};
     float norm_factor = carmack_inverse_sqrt(length_squared(&e_to_p));
-    float scale = norm_factor * dt * 0.05f;
+    float scale = norm_factor * dt * ENEMY_WALKING_SPEED;
 
     // Move
     enemy->position = (Point2d){enemy->position.x + e_to_p.x * scale, enemy->position.y + e_to_p.y * scale };
@@ -274,7 +359,8 @@ static void __update_enemy(Enemy* enemy, float dt, Point2d* p_pos) {
 }
 
 /**
- *
+ * Draw the enemy. The animation state dictates which part
+ * of the spritesheet is drawn.
  */
 static void __draw_enemy(SDL_Renderer* renderer, Enemies* enemies, int32_t enemy_index) {
     Enemy e = enemies->enemies[enemy_index];
