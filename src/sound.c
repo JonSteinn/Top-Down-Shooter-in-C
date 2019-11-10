@@ -15,7 +15,7 @@ static const uint32_t FREE_CHUNKS = 1u<<2;
 // Path to music file
 static const char MUSIC_PATH[] = "assets/sounds/music/music.mp3";
 // Path to shoot file
-static const char SHOOT_PATH[] = "assets/sounds/effects/shoot.mp3";
+static const char SHOOT_PATH[] = "assets/sounds/effects/shoot.wav";
 // Error message when music file is not found
 static const char LOAD_MUSIC_LOG[] = "Did not find music asset: %s";
 // Error message when gun sound file is not found
@@ -142,6 +142,10 @@ static bool __load_music(Sound* sound) {
  * we fail to load chunks.
  */
 static bool __load_chunks(Sound* sound) {
+    // REMOVE WHEN FOUND A GOOD SOUND EFFECT:
+    if (sound) return true; // <--- TODO: REMOVE
+
+
     sound->shoot = Mix_LoadWAV(SHOOT_PATH);
 
     // If fails
@@ -150,7 +154,6 @@ static bool __load_chunks(Sound* sound) {
 
         return false;
     }
-
     return true;
 }
 
@@ -159,6 +162,9 @@ static bool __load_chunks(Sound* sound) {
  * if fails to play music.
  */
 static bool __play_music(Sound* sound) {
+    // REMOVE WHEN DONE, TIRED OF MUSIC...:
+    if (sound) return true; // <--- TODO: REMOVE
+
     // If fails
     if (Mix_PlayMusic(sound->music, -1) == -1) {
         SDL_Log(PLAY_MUSIC_LOG, SDL_GetError());
@@ -174,6 +180,6 @@ static bool __play_music(Sound* sound) {
  */
 static void __destroy(Sound* sound, uint32_t mask) {
     if (mask & FREE_MUSIC) Mix_FreeMusic(sound->music);
-    if (mask & FREE_CHUNKS) Mix_FreeChunk(sound->shoot);
+    //if (mask & FREE_CHUNKS) Mix_FreeChunk(sound->shoot); // TODO:UNCOMMENT
     if (mask & FREE_MEMORY) free(sound);
 }
