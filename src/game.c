@@ -587,13 +587,5 @@ static void __render(Game* game) {
     draw_enemies(game->renderer, game->enemies, game->width, game->height);
     draw_player(game->renderer, game->player);
 
-    //SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, 255);
-    //int x = game->player->collision_circumference / 2;
-    //SDL_Rect r = { game->player->x - x, game->player->y - x, x*2, x*2};
-    //SDL_RenderFillRect(game->renderer, &r);
-    //fill_circle(game->renderer, game->player->x, game->player->y, game->player->collision_circumference / 2);
-
-
-
     SDL_RenderPresent(game->renderer);
 }

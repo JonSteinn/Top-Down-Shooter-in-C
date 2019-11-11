@@ -31,7 +31,7 @@
  *  - position:
  *      The 2d position of the player.
  *  - rotation:
- *      The direction the player is facing.
+ *      The direction the player is facing in radians.
  *  - collider:
  *      The geometric object to calculate collision for.
  */

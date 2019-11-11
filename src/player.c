@@ -119,6 +119,23 @@ static void __rotate(Player* player, GameEvents* gevts);
 
 /**
  * Function:
+ *  __update_collider
+ *
+ * Purpose:
+ *  Update the center position of the collider object around
+ *  the player.
+ *
+ * Parameters:
+ *  - player:
+ *      The player object.
+ *
+ * Returns:
+ *  Nothing.
+ */
+static void __update_collider(Player* player);
+
+/**
+ * Function:
  *  __destroy
  *
  * Purpose:
@@ -217,25 +234,7 @@ void update_player(Player* player, GameEvents* gevts, float dt, int32_t w, int32
     if (gevts->move_up) __move_up(player, dt);
     if (gevts->move_down) __move_down(player, dt, h);
     __rotate(player, gevts);
-
-
-
-
-
-
-
-    // Center of texture, which we rotate about
-    float dx = player->position.x + player->texture_width / 2;
-    float dy = player->position.y + player->texture_height / 2;
-
-    // A unit vector backwards to the direction player is facing
-    float a = SDL_cosf(player->rotation / 180 * 3.141592f);
-    float b = SDL_sinf(player->rotation / 180 * 3.141592f);
-
-
-    // The coord of the center of the player part of the texture
-    player->collider.center.x = dx - a * player->texture_width / 4;
-    player->collider.center.y = dy - b * player->texture_width / 4;
+    __update_collider(player);
 }
 
 /**
@@ -249,7 +248,15 @@ void draw_player(SDL_Renderer* renderer,Player* player) {
         player->texture_width,
         player->texture_height
     };
-    SDL_RenderCopyEx(renderer, player->texture, NULL, &rect, player->rotation, NULL, SDL_FLIP_NONE);
+    SDL_RenderCopyEx(
+        renderer,
+        player->texture,
+        NULL,
+        &rect,
+        rad_to_deg(player->rotation),
+        NULL,
+        SDL_FLIP_NONE
+    );
 }
 
 /**
@@ -311,15 +318,32 @@ static void __move_down(Player* player, float dt, int32_t h) {
  * Since arccos always chooses the lesser of angles betwee two vectorss
  * (if there is a 120° angle between some vectors, there is also a 240°
  * angle between them in the other direction), we multiply with the sign
- * of v_y to rotate in the correct direction. The SDL rotation requires
- * degrees so we finally convert our radians to degrees.
+ * of v_y to rotate in the correct direction.
  */
 static void __rotate(Player* player, GameEvents* gevts) {
     Vector2d d = {
         gevts->mouseX - player->position.x,
         gevts->mouseY - player->position.y
     };
-    player->rotation = rad_to_deg(sign(d.y) * fast_acos(d.x * carmack_inverse_sqrt(length_squared(&d))));
+    player->rotation = sign(d.y) * fast_acos(d.x * carmack_inverse_sqrt(length_squared(&d)));
+}
+
+/**
+ * Our image for the player is something like:
+ * ---------
+ * | A | B |
+ * ---------
+ * where A is the human and B is the gun. We don't wish
+ * for the collider to cover the gun so we must transform
+ * the center of the collider in the opposite direction the
+ * player faces by a quarter of the width of the texture.
+ */
+static void __update_collider(Player* player) {
+    int32_t scale = player->texture_width / 4;
+    player->collider.center.x = (player->position.x + player->texture_width / 2)
+        - SDL_cosf(player->rotation) * scale; // TODO: fast_cos
+    player->collider.center.y = (player->position.y + player->texture_height / 2)
+        - SDL_sinf(player->rotation) * scale; // TODO: fast_sin
 }
 
 /**
