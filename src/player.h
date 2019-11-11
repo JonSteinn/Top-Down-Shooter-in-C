@@ -11,6 +11,7 @@
 
 #include "gevent.h"
 #include "gmath.h"
+#include "collision.h"
 
 /**
  * Struct:
@@ -31,9 +32,8 @@
  *      The 2d position of the player.
  *  - rotation:
  *      The direction the player is facing.
- *  - collision_circumference:
- *      The circumference of the imaginary collision circle
- *      around the player.
+ *  - collider:
+ *      The geometric object to calculate collision for.
  */
 typedef struct {
     SDL_Texture*    texture;
@@ -41,7 +41,7 @@ typedef struct {
     int32_t         texture_height;
     Point2d         position;
     float           rotation;
-    int32_t         collision_circumference;
+    Collider        collider;
 } Player;
 
 /**

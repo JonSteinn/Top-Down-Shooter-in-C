@@ -22,6 +22,10 @@ static const char LOAD_MUSIC_LOG[] = "Did not find music asset: %s";
 static const char LOAD_SHOOT_LOG[] = "Did not find shoot sound asset: %s";
 // Error message when playing music fails
 static const char PLAY_MUSIC_LOG[] = "Can't play music: %s";
+// How loud the music is [0-128]
+static const int32_t MUSIC_VOLUME = 40;
+// How loud the gunshot is [0-128]
+static const int32_t GUN_VOLUME = 30;
 
 /**
  * Function:
@@ -134,6 +138,7 @@ static bool __load_music(Sound* sound) {
         return false;
     }
 
+    Mix_VolumeMusic(MUSIC_VOLUME);
     return true;
 }
 
@@ -142,18 +147,15 @@ static bool __load_music(Sound* sound) {
  * we fail to load chunks.
  */
 static bool __load_chunks(Sound* sound) {
-    // REMOVE WHEN FOUND A GOOD SOUND EFFECT:
-    if (sound) return true; // <--- TODO: REMOVE
-
-
     sound->shoot = Mix_LoadWAV(SHOOT_PATH);
-
     // If fails
     if (sound->shoot == NULL) {
         SDL_Log(LOAD_SHOOT_LOG, SDL_GetError());
 
         return false;
     }
+    Mix_VolumeChunk(sound->shoot, GUN_VOLUME);
+
     return true;
 }
 
@@ -180,6 +182,22 @@ static bool __play_music(Sound* sound) {
  */
 static void __destroy(Sound* sound, uint32_t mask) {
     if (mask & FREE_MUSIC) Mix_FreeMusic(sound->music);
-    //if (mask & FREE_CHUNKS) Mix_FreeChunk(sound->shoot); // TODO:UNCOMMENT
+    if (mask & FREE_CHUNKS) Mix_FreeChunk(sound->shoot);
     if (mask & FREE_MEMORY) free(sound);
 }
+
+
+// Play gun sound
+/*int32_t c = -1;
+
+if (game->gevts->shoot) {
+    if (c == -1) {
+        c = Mix_PlayChannel(-1, game->sound->shoot, -1);
+        printf("%d\n", c);
+    }
+} else {
+    if (c >= 0) {
+        printf("%d\n", Mix_HaltChannel(c));
+        c = -1;
+    }
+}*/

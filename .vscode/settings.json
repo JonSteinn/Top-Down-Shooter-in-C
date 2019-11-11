@@ -8,7 +8,9 @@
         "enemies.h": "c",
         "gclock.h": "c",
         "gmath.h": "c",
-        "sdl.h": "c"
+        "sdl.h": "c",
+        "collision.h": "c",
+        "math.h": "c"
     },
     "C_Cpp.default.intelliSenseMode": "gcc-x64",
     "files.exclude": {

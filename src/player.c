@@ -26,16 +26,16 @@ static const float PLAYER_SPEED = 0.2f;
 /**
  * Function:
  *  __move_left
- * 
+ *
  * Purpose:
  *  Move the player to the left.
- * 
+ *
  * Parameters:
  *  - player:
  *      The player object.
  *  - dt:
  *      Delta time.
- * 
+ *
  * Returns:
  *  Nothing
  */
@@ -44,10 +44,10 @@ static void __move_left(Player* player, float dt);
 /**
  * Function:
  *  __move_right
- * 
+ *
  * Purpose:
  *  Move the player to the right.
- * 
+ *
  * Parameters:
  *  - player:
  *      The player object.
@@ -55,7 +55,7 @@ static void __move_left(Player* player, float dt);
  *      Delta time.
  *  - w:
  *      The width of the window.
- * 
+ *
  * Returns:
  *  Nothing.
  */
@@ -64,16 +64,16 @@ static void __move_right(Player* player, float dt, int32_t w);
 /**
  * Function:
  *  __move_up
- * 
+ *
  * Purpose:
  *  Move the player to the up.
- * 
+ *
  * Parameters:
  *  - player:
  *      The player object.
  *  - dt:
  *      Delta time.
- * 
+ *
  * Returns:
  *  Nothing.
  */
@@ -82,10 +82,10 @@ static void __move_up(Player* player, float dt);
 /**
  * Function:
  *  __move_down
- * 
+ *
  * Purpose:
  *  Move the player to the down.
- * 
+ *
  * Parameters:
  *  - player:
  *      The player object.
@@ -93,7 +93,7 @@ static void __move_up(Player* player, float dt);
  *      Delta time.
  *  - h:
  *      The height of the window.
- * 
+ *
  * Returns:
  *  Nothing.
  */
@@ -102,16 +102,16 @@ static void __move_down(Player* player, float dt, int32_t h);
 /**
  * Function:
  *  __rotate
- * 
+ *
  * Purpose:
  *  Rotate the player towards the mouse.
- * 
+ *
  * Parameters:
  *  - player:
  *      The player object.
  *  - gevts:
  *      The game events that occured.
- * 
+ *
  * Returns:
  *  Nothing.
  */
@@ -120,10 +120,10 @@ static void __rotate(Player* player, GameEvents* gevts);
 /**
  * Function:
  *  __destroy
- * 
+ *
  * Purpose:
  *  Release resources of the Player object.
- * 
+ *
  * Parameters:
  *  - player:
  *      The player object.
@@ -135,7 +135,7 @@ static void __rotate(Player* player, GameEvents* gevts);
  *      FREE_SURFACE
  *      FREE_MEMORY
  *      FREE_TEXTURE
- * 
+ *
  * Returns:
  *  Nothing.
  */
@@ -144,18 +144,18 @@ static void __destroy(Player* player, SDL_Surface* surface, uint32_t mask);
 /**
  * Function:
  *  __create_texture
- * 
+ *
  * Purpose:
  *  Create a texture from an existing surface.
- * 
+ *
  * Parameters:
  *  - renderer:
  *      A structure that contains a rendering state.
  *  - surface:
- *      A structure that contains a collection of pixels used in software blitting. 
+ *      A structure that contains a collection of pixels used in software blitting.
  *  - player
  *      The player object.
- * 
+ *
  * Returns:
  *  true if successful, false otherwise.
  */
@@ -164,16 +164,16 @@ static bool __create_texture(SDL_Renderer* renderer, SDL_Surface* surface, Playe
 /**
  * Function:
  *  __query_texture
- * 
+ *
  * Purpose:
  *  Query texture for its dimension.
- * 
+ *
  * Parameters:
  *  - player:
  *      The Player object.
  *  - surface:
- *      A structure that contains a collection of pixels used in software blitting. 
- * 
+ *      A structure that contains a collection of pixels used in software blitting.
+ *
  * Returns:
  *  true if successful, false otherwise.
  */
@@ -191,26 +191,25 @@ Player* init_player(SDL_Renderer* renderer, float x, float y) {
         SDL_Log(LOAD_IMG_LOG, SDL_GetError());
         return NULL;
     }
-    
+
     Player* p = (Player*)malloc(sizeof(Player));
 
     if (!__create_texture(renderer, surface, p)) return NULL;
     if (!__query_texture(p, surface)) return NULL;
-    
+
     // The lesser of the two.
-    p->collision_circumference = p->texture_width < p->texture_height ? p->texture_width : p->texture_height;
+    p->collider.radius = (p->texture_width < p->texture_height ? p->texture_width : p->texture_height) >> 1;
     p->position = (Point2d){x, y};
 
     SDL_FreeSurface(surface);
-    
+
     return p;
 }
 
 /**
  * Move the player in any requested direction as long as he
  * will not leave the screen and then rotate him towards
- * the mouse.Does not take into account the rotation of the 
- * player and the fact that half the sprite is a gun.
+ * the mouse. Checks for wall collision.
  */
 void update_player(Player* player, GameEvents* gevts, float dt, int32_t w, int32_t h) {
     if (gevts->move_left) __move_left(player, dt);
@@ -218,18 +217,37 @@ void update_player(Player* player, GameEvents* gevts, float dt, int32_t w, int32
     if (gevts->move_up) __move_up(player, dt);
     if (gevts->move_down) __move_down(player, dt, h);
     __rotate(player, gevts);
+
+
+
+
+
+
+
+    // Center of texture, which we rotate about
+    float dx = player->position.x + player->texture_width / 2;
+    float dy = player->position.y + player->texture_height / 2;
+
+    // A unit vector backwards to the direction player is facing
+    float a = SDL_cosf(player->rotation / 180 * 3.141592f);
+    float b = SDL_sinf(player->rotation / 180 * 3.141592f);
+
+
+    // The coord of the center of the player part of the texture
+    player->collider.center.x = dx - a * player->texture_width / 4;
+    player->collider.center.y = dy - b * player->texture_width / 4;
 }
 
 /**
- * Convert the player position into integers before 
+ * Convert the player position into integers before
  * rendering. The rotation is clockwise.
  */
 void draw_player(SDL_Renderer* renderer,Player* player) {
-    SDL_Rect rect = { 
-        (int)player->position.x, 
-        (int)player->position.y, 
-        player->texture_width, 
-        player->texture_height 
+    SDL_Rect rect = {
+        (int)player->position.x,
+        (int)player->position.y,
+        player->texture_width,
+        player->texture_height
     };
     SDL_RenderCopyEx(renderer, player->texture, NULL, &rect, player->rotation, NULL, SDL_FLIP_NONE);
 }
@@ -243,20 +261,20 @@ void destroy_player(Player* player) {
 }
 
 /**
- * Moves left if we are not too close to the left border. 
+ * Moves left if we are not too close to the left border.
  */
 static void __move_left(Player* player, float dt) {
-    player->position.x -= PLAYER_SPEED * dt;
-    if (player->position.x < 0) player->position.x = 0.0f;
+    if (player->collider.center.x - player->collider.radius >= 0) {
+        player->position.x -= PLAYER_SPEED * dt;
+    }
 }
 
 /**
- * Moves right if we are not too close to the right border. 
+ * Moves right if we are not too close to the right border.
  */
 static void __move_right(Player* player, float dt, int32_t w) {
-    player->position.x += PLAYER_SPEED * dt;
-    if (player->position.x + player->collision_circumference > w) {
-        player->position.x = w - player->collision_circumference;
+    if (player->collider.center.x + player->collider.radius <= w) {
+        player->position.x += PLAYER_SPEED * dt;
     }
 }
 
@@ -264,18 +282,18 @@ static void __move_right(Player* player, float dt, int32_t w) {
  * Moves up if we are not too close to the upper border.
  */
 static void __move_up(Player* player, float dt) {
-    player->position.y -= PLAYER_SPEED * dt;
-    if (player->position.y < 0) player->position.y = 0.0f;
+    if (player->collider.center.y - player->collider.radius >= 0) {
+        player->position.y -= PLAYER_SPEED * dt;
+    }
 }
 
 /**
  * Moves down if we are not too close to the lower border.
  */
 static void __move_down(Player* player, float dt, int32_t h) {
-    player->position.y += PLAYER_SPEED * dt;
-    if (player->position.y + player->collision_circumference > h) {
-        player->position.y = h - player->collision_circumference;
-    } 
+    if (player->collider.center.y + player->collider.radius <= h) {
+        player->position.y += PLAYER_SPEED * dt;
+    }
 }
 
 /**
@@ -283,22 +301,22 @@ static void __move_down(Player* player, float dt, int32_t h) {
  * Then the angle between the vector v=[P to M] and u=[1,0] is the angle
  * we are looking for. Note the u=[1,0] is chosen because the sprite
  * faces east with no rotation.
- * 
+ *
  * cos(x) = (v*u) / (|v|*|u|)
  *        = (1*v_x + 0*v_y) / ( sqrt(1*1+0+0) + sqrt(v_x*v_x + v_y*v_y))
  *        = v_x / (sqrt(1) * sqrt(|v|*|v|))
  *        = v_x / sqrt(|v|*|v|)
  * => x = arccos(v_x / sqrt(|v| * |v|))
- * 
- * Since arccos always chooses the lesser of angles betwee two vectorss 
- * (if there is a 120° angle between some vectors, there is also a 240° 
- * angle between them in the other direction), we multiply with the sign 
- * of v_y to rotate in the correct direction. The SDL rotation requires 
+ *
+ * Since arccos always chooses the lesser of angles betwee two vectorss
+ * (if there is a 120° angle between some vectors, there is also a 240°
+ * angle between them in the other direction), we multiply with the sign
+ * of v_y to rotate in the correct direction. The SDL rotation requires
  * degrees so we finally convert our radians to degrees.
  */
 static void __rotate(Player* player, GameEvents* gevts) {
     Vector2d d = {
-        gevts->mouseX - player->position.x, 
+        gevts->mouseX - player->position.x,
         gevts->mouseY - player->position.y
     };
     player->rotation = rad_to_deg(sign(d.y) * fast_acos(d.x * carmack_inverse_sqrt(length_squared(&d))));
