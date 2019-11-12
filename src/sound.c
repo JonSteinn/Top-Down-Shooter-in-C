@@ -139,6 +139,7 @@ static bool __load_music(Sound* sound) {
     }
 
     Mix_VolumeMusic(MUSIC_VOLUME);
+
     return true;
 }
 
@@ -148,12 +149,14 @@ static bool __load_music(Sound* sound) {
  */
 static bool __load_chunks(Sound* sound) {
     sound->shoot = Mix_LoadWAV(SHOOT_PATH);
+
     // If fails
     if (sound->shoot == NULL) {
         SDL_Log(LOAD_SHOOT_LOG, SDL_GetError());
-
+        __destroy(sound, FREE_MUSIC | FREE_MEMORY);
         return false;
     }
+
     Mix_VolumeChunk(sound->shoot, GUN_VOLUME);
 
     return true;
@@ -165,7 +168,7 @@ static bool __load_chunks(Sound* sound) {
  */
 static bool __play_music(Sound* sound) {
     // REMOVE WHEN DONE, TIRED OF MUSIC...:
-    if (sound) return true; // <--- TODO: REMOVE
+    //if (sound) return true; // <--- TODO: REMOVE
 
     // If fails
     if (Mix_PlayMusic(sound->music, -1) == -1) {
