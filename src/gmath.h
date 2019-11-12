@@ -1,8 +1,6 @@
 #ifndef xJdkK3dms1_GMATH_H
 #define xJdkK3dms1_GMATH_H
 
-#include <math.h>
-
 /**
  * Struct:
  *  Coordinates2d
@@ -41,38 +39,6 @@ typedef Coordinates2d Point2d;
  *  1/sqrt(x)
  */
 float carmack_inverse_sqrt(float x);
-
-/**
- * Function:
- *  fast_cos
- *
- * Purpose:
- *  Approximate the cosine of a number quickly.
- *
- * Parameters:
- *  - x:
- *      An angle in radians.
- *
- * Returns:
- *  cos(x)
- */
-float fast_cos(float x);
-
-/**
- * Function:
- *  fast_sin
- *
- * Purpose:
- *  Approximate the sine of a number quickly.
- *
- * Parameters:
- *  - x:
- *      An angle in radians.
- *
- * Returns:
- *  sin(x)
- */
-float fast_sin(float x);
 
 /**
  * Function:

@@ -1,34 +1,9 @@
 #include "gmath.h"
 
-
-// A float representation of PI.
-static const float PI = 3.1415926535897932384626f;
 // A float representation of PI/2
 static const float HALF_PI = 1.570796326794896619231f;
-// A float representation of 2*PI
-static const float TWO_PI = 6.283185f;
-// A float representation of 1/(2*Pi)
-static const float TWO_PI_INVERSE = 0.1591549f;
-// A float representation of 3*PI/2
-static const float THREE_HALF_PI = 4.7123889f;
 // A float representation of 180 / PI
 static const float DEGREES_IN_ONE_RADIAN = 57.29577951308232f;
-
-/**
- * Function:
- * 	__cos_helper
- *
- * Purpose:
- * 	Estimate cos with partial series expansion.
- *
- * Parameters:
- * 	- x:
- * 		Angle in radians
- *
- * Returns:
- * 	Series expansion of cos(x).
- */
-static float __cos_helper(float x);
 
 
 /**
@@ -57,28 +32,6 @@ float carmack_inverse_sqrt(float x)
 	//	y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
 
 	return y;
-}
-
-/**
- * Borrowed from:
- * 	https://github.com/divideconcept/FastTrigo/blob/master/fasttrigo.cpp
- */
-float fast_cos(float x) {
-
-    x = x - floorf(x * TWO_PI_INVERSE) * TWO_PI;
-    x = x > 0.0f ? x : -x;
-
-    if(x < HALF_PI) return __cos_helper(x);
-    if(x < PI) return -__cos_helper(PI - x);
-    if(x < THREE_HALF_PI) return -__cos_helper(x - PI);
-    return __cos_helper(TWO_PI - x);
-}
-
-/**
- * Uses fast_cos to compute by shifting angle.
- */
-float fast_sin(float x) {
-	return fast_cos(HALF_PI - x);
 }
 
 /**
@@ -122,13 +75,4 @@ int sign(float x) {
  */
 float length_squared(Vector2d* vec) {
     return vec->x * vec->x + vec->y * vec->y;
-}
-
-/**
- * Borrowed from:
- * 	https://github.com/divideconcept/FastTrigo/blob/master/fasttrigo.cpp
- */
-static float __cos_helper(float x) {
-    float x2 = x*x;
-    return 0.99940307f + x2*(0.49558072f + 0.03679168f * x2);
 }

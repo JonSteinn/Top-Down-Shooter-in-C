@@ -341,9 +341,9 @@ static void __rotate(Player* player, GameEvents* gevts) {
 static void __update_collider(Player* player) {
     int32_t scale = player->texture_width / 4;
     player->collider.center.x = (player->position.x + player->texture_width / 2)
-        - SDL_cosf(player->rotation) * scale; // TODO: fast_cos
+        - SDL_cosf(player->rotation) * scale;
     player->collider.center.y = (player->position.y + player->texture_height / 2)
-        - SDL_sinf(player->rotation) * scale; // TODO: fast_sin
+        - SDL_sinf(player->rotation) * scale;
 }
 
 /**
