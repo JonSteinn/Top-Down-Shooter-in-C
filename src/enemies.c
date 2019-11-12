@@ -21,7 +21,7 @@ static const float ENEMY_ANIMATION_SPEED = 0.01f;
 // How fast the enemy walks
 static const float ENEMY_WALKING_SPEED = 0.05f;
 // Enemy size
-static const int32_t ENEMY_SIZE = 50;
+static const int32_t ENEMY_SIZE = 40;
 
 /**
  * Function:
@@ -262,6 +262,7 @@ static Enemies* __alloc_and_set_enemies(int32_t max_enemies) {
     e->texture_states[5] = (SDL_Rect){ 186, 101, 58, 61 };
 
     e->max_enemies = max_enemies;
+    e->collision_radius = 0.9f * ENEMY_SIZE/2.0f;
 
     return e;
 }

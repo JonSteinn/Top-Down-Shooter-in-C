@@ -572,6 +572,9 @@ static void __process_events(Game* game) {
  * Calls update on all update-able game objects.
  */
 static void __update(Game* game) {
+
+    // if (player_enemy_collision(&game->player->collider, game->enemies)) { ... game over stuff ... }
+
     update_player(game->player, game->gevts, game->gclock->dt, game->width, game->height);
     update_enemies(game->enemies, game->gclock->dt, &game->player->position);
 }

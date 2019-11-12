@@ -26,8 +26,8 @@ PLAYER = player
 UTILS = utils
 FLOOR = floor
 SOUND = sound
-ENEMIES = enemies
 COLLISION = collision
+ENEMIES = enemies
 
 DEPENDENCIES = \
 	$(GAME).o \
@@ -38,8 +38,8 @@ DEPENDENCIES = \
 	$(UTILS).o \
 	$(FLOOR).o \
 	$(SOUND).o \
-	$(ENEMIES).o \
-	$(COLLISION).o
+	$(COLLISION).o \
+	$(ENEMIES).o
 
 define COMPILE
 $(1).o: $(1).c
@@ -62,8 +62,8 @@ $(call COMPILE,PLAYER)
 $(call COMPILE,UTILS)
 $(call COMPILE,FLOOR)
 $(call COMPILE,SOUND)
-$(call COMPILE,ENEMIES)
 $(call COMPILE,COLLISION)
+$(call COMPILE,ENEMIES)
 
 clean:
 	rm -f *.o

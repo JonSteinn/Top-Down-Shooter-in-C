@@ -4,13 +4,14 @@
 #include <stdbool.h>
 
 #include "gmath.h"
+#include "enemies.h"
 
 typedef struct {
     Point2d center;
     float   radius;
 } Collider;
 
-bool collide(Collider* c1, Collider* c2);
+bool player_enemy_collision(Collider* p_collider, Enemies* enemies);
 
 
 #endif

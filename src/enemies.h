@@ -51,12 +51,15 @@ typedef struct {
  *      An array of enemies.
  *  - max_enemies:
  *      The element count of the enemies array.
+ *  - collision_radius:
+ *      The width (or height) of the enemy, divided by 2.
  */
 typedef struct {
     SDL_Texture*    texture;
     SDL_Rect        texture_states[6];
     Enemy*          enemies;
     int32_t         max_enemies;
+    float           collision_radius;
 } Enemies;
 
 /**
