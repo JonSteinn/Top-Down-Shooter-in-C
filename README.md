@@ -40,13 +40,15 @@ make -C src
 
 
 ## TODO:
-5. Collision enemy+player
-6. Data structure for bullets (pre-allocated hashset?)
-7. Render Bullets
-8. Move bullets
-9. Collision bullets+enemies
-10. Sound effect for bullets
-11. Data structure for blood
-12. Render blood
-13. Animate blood
-14. Death (game over)
+* Bullets
+    projectile vs hit scan?
+    - if projectile...
+        - linked list with pre-allocated mem larger than |max lifetime of a bullet| * |bullets/sec|
+        - motion math...
+        - something to render...
+        - last_fram_pos ---> this_frame_pos line segment circle coll
+    - hitscan easy...
+        - line circ coll
+    - sound
+* Blood Animation? Store blood struct in each enemy with seperate position...
+* Death (game over mechanic)
