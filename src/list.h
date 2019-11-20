@@ -1,134 +1,220 @@
-#ifndef xcW0Voy9iu_LIST_H
-#define xcW0Voy9iu_LIST_H
+/**********************************************************
+ * FROM:                                                  *
+ *      https://github.com/JonSteinn/FastSinglyLinkedList *
+ **********************************************************/
 
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
-#include <string.h>
-#include <stdlib.h>
+#ifndef __P4H95NNBPR_LIST_H__
+#define __P4H95NNBPR_LIST_H__
+
+#include <stdint.h>  // uint32_t, uint64_t
+#include <stdlib.h>  // free, malloc and calloc
+#include <stddef.h>  // NULL
+#include <string.h>  // memcpy
+
+/**
+ * Enum:
+ *  IterationAction
+ *
+ * Purpose:
+ *  What should be done at each element, when iterating.
+ *
+ * Constants:
+ *  - IT_REMOVE:
+ *      The element should be removed.
+ *  - IT_KEEP:
+ *      The element should be kept.
+ *  - IT_STOP:
+ *      Stop iterating after current element.
+ */
+typedef enum {
+    IT_REMOVE = 0,
+    IT_KEEP   = 1,
+    IT_STOP   = 2
+} IterationAction;
 
 /**
  * Struct:
- *  struct ListItem
+ *  struct __ListItem__
  *
  * Purpose:
- *  A node in the list.
+ *  A node in the list. Not to be used directly by
+ *  the list user.
  *
  * Fields:
  *  - data:
  *      The data to store in the list.
  *  - next:
- *      The pointer to the next element.
+ *      A pointer to the next element.
  */
-struct ListItem {
-    void*               data;
-    struct ListItem*    next;
+struct __ListItem__ {
+    void*                   data;
+    struct __ListItem__*    next;
 };
+
+/**
+ * A pointer to a list element.
+ */
+typedef struct __ListItem__* Node;
+
+/**
+ * A pointer to a list element pointer.
+ */
+typedef Node* NodePtr;
+
+/**
+ * IterationAction fun(void* current_element, void* aditional_data) { ... }
+ *
+ * Additional data can be passed if the list should alter
+ * data outside the list. If fun returns IT_REMOVE, we remove
+ * the current element. If it returns IT_STOP, we stop iterating.
+ * Otherwise we continue and keep the current element in the list.
+ */
+typedef IterationAction (*it_fun)(void*, void*);
+
+/**
+ * void fun(void* data) { ... }
+ *
+ * If the data stored in the list holds allocated data that
+ * needs to be freed by the iterator, then it can be done
+ * here.
+ */
+typedef void (*data_free_fun)(void*);
 
 /**
  * Struct:
  *  List
  *
  * Purpose:
- *  A singly linked list that pre-allocates memory for its nodes
- *  in a fixed size circular array. Suppose the array hase size
- *  X, then for any element added, it must be gone before another
- *  X-1 have been added. This limits the lifetime of each element
- *  and is to be used for short lived objects.
+ *  Holds all internal related resources for the list.
  *
  * Fields:
- *  - data_size:
- *      The number of bytes in the data being stored in each node.
- *  - mem_size:
- *      The amount of pre-allocated memory used for list.
- *  - index:
- *      The current index in the pre-allocated memory array.
- *  - pre_allocated:
- *      Array of pre-allocated nodes.
+ *  - queue_head:
+ *      The head of the queue that holds nodes not in use.
+ *  - queue_tail:
+ *      The tail of the queue that holds nodes not in use.
  *  - head:
- *      First element in the list.
+ *      The head of the list.
+ *  - data_size:
+ *      The size of the data stored in the list.
+ *  - max_capacity:
+ *      The maximum number of elements the list can carry.
+ *  - data_free:
+ *      An optional free function for data. It should not free
+ *      the data object itself but rather any internal data that
+ *      needs to be freed. This is called each time the queue feeds
+ *      the list a node.
+ *  - pre_allocated_nodes:
+ *      A pointer to the pre-allocated nodes so it can be freed later.
+ *  - pre_allocated_data:
+ *      A pointer to the pre-allocated data so it can be freed later.
  */
 typedef struct {
-    size_t              data_size;
-    int32_t             mem_size;
-    int32_t             index;
-    struct ListItem*    pre_allocated;
-    struct ListItem*    head;
+    Node            queue_head;
+    Node            queue_tail;
+    Node            head;
+    uint64_t        data_size;
+    uint64_t        max_capacity;
+    data_free_fun   data_free;
+    void*           pre_allocated_nodes;
+    void*           pre_allocated_data;
 } List;
 
 /**
  * Function:
- *  init_list
+ *  list_init
  *
  * Purpose:
- *  Allocate all resources for the list, given a
- *  specific data type of all its nodes.
+ *  Allocate memory and initialize a List object.
  *
  * Parameters:
- *  - memory:
- *      How much pre-allocated memory should be allocated.
+ *  - max_capacity:
+ *      How many elements the list should be able to carry at most.
  *  - data_size:
- *      What is the data size of the node data in bytes.
+ *      The size of the data type stored in the list.
  *
  * Returns:
- *  A allocated and initialized list.
+ *  A List.
  */
-List* init_list(int32_t memory, size_t data_size);
+List* list_init(uint64_t max_capacity, uint64_t data_size);
+
+/**
+ * Function:
+ *  list_init_full
+ *
+ * Purpose:
+ *  Allocate memory and initialize a List object.
+ *
+ * Parameters:
+ *  - max_capacity:
+ *      How many elements the list should be able to carry at most.
+ *  - data_size:
+ *      The size of the data type stored in the list.
+ *  - data_free:
+ *      An internal free function for the data stored in the list.
+ *
+ * Returns:
+ *  A List.
+ */
+List* list_init_full(uint64_t max_capacity, uint64_t data_size, data_free_fun data_free);
 
 /**
  * Function:
  *  list_add
  *
  * Purpose:
- *  Prepends data to the list.
+ *  Add an element to the front of the list.
  *
  * Parameters:
- *  - data:
- *      The data to add to the list. The data is
- *      copied so the caller should handle cleaning
- *      up the resource of the parameter if needed.
+ *  - list:
+ *      The list to prepend to.
+ *  - element:
+ *      The element to add.
  *
  * Returns:
  *  Nothing.
  */
-void list_add(List* list, void* data);
+void list_add(List* list, void* element);
+
 
 /**
  * Function:
  *  list_iterate
  *
  * Purpose:
- *  Iterate through the list and perform a given function on
- *  every element. The provided funtion can return false to
- *  remove a specific element.
+ *  Iterate through all or some elements of the list and
+ *  optionally remove them.
  *
  * Parameters:
  *  - list:
  *      The list to iterate through.
- *  - f:
- *      A function with data type as input (casted to a void pointer)
- *      that returns false if the input element should be removed
- *      from the list, true otherwise.
+ *  - fun:
+ *      A function to apply to each element. It should return
+ *      IT_REMOVE if that element should be deleted, IT_STOP
+ *      if we should stop the iteration and IT_KEEP to continue
+ *      the iteration and keep the element in the list.
+ *  - data:
+ *      Additional data to pass to fun.
  *
  * Returns:
  *  Nothing.
  */
-void list_iterate(List* list, bool (*f)(void*));
+void list_iterate(List* list, it_fun fun, void* data);
+
 
 /**
  * Function:
- *  destroy_list
+ *  list_destroy
  *
  * Purpose:
- *  Free any resources in use by a list.
+ *  Free all resources in use by the list.
  *
  * Parameters:
  *  - list:
- *      The list to free.
+ *      The list to destroy.
  *
  * Returns:
  *  Nothing.
  */
-void destroy_list(List* list);
+void list_destroy(List* list);
 
 #endif
