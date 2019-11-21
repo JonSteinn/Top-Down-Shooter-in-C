@@ -1,6 +1,5 @@
 #!/bin/bash
-make -C ./src distclean
-make -C ./src
-make -C ./src clean
+./scripts/clean_all.sh
+make -C ./src DEBUG=1
 
 ./src/main.exe "$@"

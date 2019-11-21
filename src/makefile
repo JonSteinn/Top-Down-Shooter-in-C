@@ -1,12 +1,18 @@
+ifeq ($(DEBUG), 1)
+	MODE = -g -O0 -DDEBUG
+else
+	MODE = -O2 -DNDEBUG
+endif
+
 CC = gcc
 CFLAGS = \
 	-std=c11 \
-	-D_XOPEN_SOURCE=700 \
-	-O2 \
+	$(MODE) \
 	-Wall \
 	-Wextra \
 	-Wformat=2 \
-	-DDEBUG \
+	-Wfatal-errors \
+	-Werror \
 	$(shell pkg-config --cflags sdl2) \
 	$(shell pkg-config --cflags SDL2_image) \
 	$(shell pkg-config --cflags SDL2_mixer)
@@ -29,6 +35,7 @@ SOUND = sound
 COLLISION = collision
 ENEMIES = enemies
 LIST = list
+BULLETS = bullets
 
 DEPENDENCIES = \
 	$(GAME).o \
@@ -41,7 +48,8 @@ DEPENDENCIES = \
 	$(SOUND).o \
 	$(COLLISION).o \
 	$(ENEMIES).o \
-	$(LIST).o
+	$(LIST).o \
+	$(BULLETS).o
 
 define COMPILE
 $(1).o: $(1).c
@@ -53,7 +61,7 @@ endef
 all: $(TARGET)
 
 $(TARGET): $(TARGET).o $(DEPENDENCIES)
-	$(CC) $(TARGET).o $(DEPENDENCIES) -o $(TARGET).exe $(LDLIBS)
+	$(CC) $(TARGET).o $(DEPENDENCIES) $(CFLAGS) -o $(TARGET).exe $(LDLIBS)
 
 $(call COMPILE,TARGET)
 $(call COMPILE,GAME)
@@ -67,6 +75,7 @@ $(call COMPILE,SOUND)
 $(call COMPILE,COLLISION)
 $(call COMPILE,ENEMIES)
 $(call COMPILE,LIST)
+$(call COMPILE,BULLETS)
 
 clean:
 	rm -f *.o

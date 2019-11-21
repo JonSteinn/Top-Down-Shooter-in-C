@@ -5,8 +5,7 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
-make -C ./src distclean
-make -C ./src clean
+./scripts/clean_all.sh
 
 git add .
 git commit -m "$2"
